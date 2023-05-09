@@ -18,58 +18,22 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
     EntityManager em;
     @Override
     public void save(Article article) {
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
         em.persist(article);
-        try{
-            em.persist(article);
-            tx.commit();
-        }catch(Exception e){
-            tx.rollback();
-        }finally{
-             em.close();
-        }
     }
 
     @Override
     public List<Article> findAll() {
-        EntityTransaction tx = em.getTransaction();
-        List<Article> articles = new ArrayList<>();
-        try{
-            articles = em.createQuery("SELECT a FROM article a", Article.class)
+        return em.createQuery("SELECT a FROM Article a", Article.class)
                     .getResultList();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            em.close();
-        }
-        return articles;
     }
 
     @Override
     public Optional<Article> findById(Long id) {
-        EntityTransaction tx = em.getTransaction();
-        Article article = null;
-        try{
-            article = em.find(Article.class, id);
-        }catch(Exception e){
-            tx.rollback();
-            e.printStackTrace();
-        }finally{
-            em.close();
-        }
-        return Optional.ofNullable(article);
+        return Optional.ofNullable(em.find(Article.class, id));
     }
 
     @Override
     public void delete(Article article) {
-        EntityTransaction tx = em.getTransaction();
-        try{
-            em.remove(article);
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally{
-            em.close();
-        }
+        em.remove(article);
     }
 }
