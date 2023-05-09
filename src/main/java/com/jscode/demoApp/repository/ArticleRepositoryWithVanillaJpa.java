@@ -17,8 +17,9 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
     @PersistenceContext
     EntityManager em;
     @Override
-    public void save(Article article) {
+    public Article save(Article article) {
         em.persist(article);
+        return article;
     }
 
     @Override
