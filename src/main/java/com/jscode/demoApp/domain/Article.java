@@ -13,7 +13,7 @@ import javax.persistence.*;
 @ToString
 @Getter
 @NoArgsConstructor
-public class Article {
+public class Article extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "article_id")
     private Long id;
