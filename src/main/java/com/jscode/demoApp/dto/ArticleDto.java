@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class ArticleDto {
-    private Long id;
+    @Setter private Long id;
     @Setter
     private String title;
     @Setter
