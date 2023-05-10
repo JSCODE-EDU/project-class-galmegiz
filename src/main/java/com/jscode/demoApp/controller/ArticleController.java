@@ -44,7 +44,7 @@ public class ArticleController {
     }
 
     @PutMapping("/articles/{id}")
-    public ResponseEntity<ArticleDto> updateArticle(ArticleDto articleDto){
+    public ResponseEntity<ArticleDto> updateArticle(@RequestBody ArticleDto articleDto){
         ArticleDto updatedArticleDto = null;
         try{
             updatedArticleDto = articleService.updateArticle(articleDto);

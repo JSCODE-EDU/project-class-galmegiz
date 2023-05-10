@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class ArticleDto {
-    @Setter private Long id;
+    private Long id;
     @Setter
     private String title;
     @Setter
@@ -21,6 +21,6 @@ public class ArticleDto {
 
 
     public static ArticleDto fromEntity(Article article){
-        return new ArticleDto(article.getId(), article.getTitle(), article.getTitle());
+        return new ArticleDto(article.getId(), article.getTitle(), article.getContent());
     }
 }
