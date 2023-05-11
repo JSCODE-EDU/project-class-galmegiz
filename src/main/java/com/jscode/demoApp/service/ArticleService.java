@@ -1,14 +1,17 @@
 package com.jscode.demoApp.service;
 
+import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +30,20 @@ public class ArticleService {
         return ArticleDto.fromEntity(article);
     }
 
+    public List<ArticleDto> searchArticle(SearchType searchType, String searchKeyword){
+        List<Article> articles = new ArrayList<>();
+
+        if(searchType == null || StringUtils.isEmptyOrWhitespace(searchKeyword)){
+            articles = articleRepository.findAll();
+        }else if(searchType == SearchType.TITLE){
+            articles = articleRepository.findByTitle(searchKeyword);
+        }else{ //ToDo : 향후 구현
+            articles = articleRepository.findAll();
+        }
+
+        return articles.stream().map(ArticleDto::fromEntity).toList();
+    }
+    //getArticles를 빼는 게 나을까?
     public List<ArticleDto> getAllArticles(){
         List<Article> articles = articleRepository.findAll();
         return articles.stream().map(ArticleDto::fromEntity).toList();

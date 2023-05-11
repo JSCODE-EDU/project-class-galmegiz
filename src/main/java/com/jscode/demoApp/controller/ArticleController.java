@@ -3,6 +3,8 @@ package com.jscode.demoApp.controller;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+
+import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.service.ArticleService;
@@ -20,8 +22,9 @@ public class ArticleController {
 
     private final ArticleService articleService;
     @GetMapping("/articles")
-    public ResponseEntity<List<ArticleDto>> getAllArticles(){
-        List<ArticleDto> articleDtos = articleService.getAllArticles();
+    public ResponseEntity<List<ArticleDto>> getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
+                                                           @RequestParam(name="searchKeyword", required = false, defaultValue = "")String searchKeyword){
+        List<ArticleDto> articleDtos = articleService.searchArticle(searchType, searchKeyword);
         return ResponseEntity.ok(articleDtos);
     }
 
@@ -63,4 +66,5 @@ public class ArticleController {
         }
         return ResponseEntity.ok("게시물이 삭제되었습니다.");
     }
+
 }

@@ -56,6 +56,8 @@ public class ArticleRepositoryTest {
     @Test
     @Transactional
     public void articleFindAllTest(){
+        saveArticles();
+        saveArticles();
         List<Article> articles = articleRepository.findAll();
         System.out.println("========");
         articles.stream().forEach(System.out::println);
@@ -75,5 +77,18 @@ public class ArticleRepositoryTest {
         articleRepository.delete(newArticle);
         Optional<Article> article = articleRepository.findById(deletedId);
         Assertions.assertThat(article.isPresent()).isFalse();
+    }
+
+    @DisplayName("제목 검색 테스트")
+    @Test
+    @Transactional
+    public void findByTitleTest(){
+        Article article1 = Article.builder().title("검색해줘").content("검색 내용").build();
+        Article article2 = Article.builder().title("검색해줘").content("검색 내용").build();
+        articleRepository.save(article1);
+        articleRepository.save(article2);
+
+        List<Article> searchedArticles = articleRepository.findByTitle("검색해줘");
+        Assertions.assertThat(searchedArticles.size()).isEqualTo(2);
     }
 }

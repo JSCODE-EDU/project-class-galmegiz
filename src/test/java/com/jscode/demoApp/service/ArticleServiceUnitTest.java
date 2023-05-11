@@ -1,5 +1,6 @@
 package com.jscode.demoApp.service;
 
+import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.repository.ArticleRepository;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.*;
@@ -37,8 +39,19 @@ public class ArticleServiceUnitTest {
     public void saveTest(){
         Article article = Article.builder().title("제목").content("내용").build();
         given(articleRepository.save(any(Article.class))).willReturn(article);
-        
+
         articleService.createArticle(ArticleDto.fromEntity(article));
         then(articleRepository).should().save(any(Article.class));
+    }
+
+    @Test
+    @DisplayName("검색 테스트")
+    public void searchTest(){
+        given(articleRepository.findByTitle(any(String.class))).willReturn(new ArrayList<Article>());
+        articleService.searchArticle(SearchType.TITLE, "searchKeyworkd");
+        articleService.searchArticle(null, "searchKeyworkd");
+
+        then(articleRepository).should().findByTitle(any(String.class));
+        then(articleRepository).should().findAll();
     }
 }
