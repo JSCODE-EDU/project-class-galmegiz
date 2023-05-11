@@ -7,6 +7,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,12 +18,16 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 
-@SpringBootTest
+//@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 @Transactional
 public class ArticleServiceTest {
 
-    @Autowired
-    ArticleService articleService;
+
+
+    @InjectMocks private ArticleService articleService;
+    @Mock private ArticleRepository articleRepository;
+
 
     public void saveArticles(){
         for(int i = 0; i < 10; i++){
@@ -36,6 +44,7 @@ public class ArticleServiceTest {
     @DisplayName("id로 게시글 찾기 테스트")
     @Test
     public void getArticleTest(){
+        System.out.println(articleRepository);
         String title = "제목 찾기";
         String content = "내용 찾기";
         Article article = Article.builder()
