@@ -7,6 +7,8 @@ import java.util.List;
 import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
+import com.jscode.demoApp.dto.request.ArticleRequestDto;
+import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,35 +24,38 @@ public class ArticleController {
 
     private final ArticleService articleService;
     @GetMapping("/articles")
-    public ResponseEntity<List<ArticleDto>> getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
-                                                           @RequestParam(name="searchKeyword", required = false, defaultValue = "")String searchKeyword){
-        List<ArticleDto> articleDtos = articleService.searchArticle(searchType, searchKeyword);
+    public ResponseEntity<List<ArticleResponseDto>> getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
+                                                                @RequestParam(name="searchKeyword", required = false, defaultValue = "")String searchKeyword){
+        List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchType, searchKeyword)
+                                                                .stream()
+                                                                .map(ArticleResponseDto::fromDto)
+                                                                .toList();
         return ResponseEntity.ok(articleDtos);
     }
 
     @GetMapping("/articles/{id}")
-    public ResponseEntity<ArticleDto> getArticle(@PathVariable Long id){
-        ArticleDto articleDto = null;
+    public ResponseEntity<ArticleResponseDto> getArticle(@PathVariable Long id){
+        ArticleResponseDto articleResponseDto = null;
         try{
-            articleDto = articleService.getArticle(id);
+            articleResponseDto = ArticleResponseDto.fromDto(articleService.getArticle(id));
         }catch(EntityNotFoundException e){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(articleDto);
+        return ResponseEntity.ok(articleResponseDto);
     }
 
     @PostMapping("/articles/form")
-    public ResponseEntity<String> createArticle(ArticleDto articleDto) throws URISyntaxException {
-        ArticleDto newArticleDto = articleService.createArticle(articleDto);
+    public ResponseEntity<String> createArticle(ArticleRequestDto articleRequestDto) throws URISyntaxException {
+        ArticleDto newArticleDto = articleService.createArticle(articleRequestDto.toArticleDto());
         URI createdUrl = new URI("/articles/" + newArticleDto.getId());
         return ResponseEntity.created(createdUrl).body("게시글이 생성되었습니다.");
     }
 
     @PutMapping("/articles/{id}")
-    public ResponseEntity<ArticleDto> updateArticle(@RequestBody ArticleDto articleDto){
-        ArticleDto updatedArticleDto = null;
+    public ResponseEntity<ArticleResponseDto> updateArticle(@RequestBody ArticleRequestDto articleRequestDto){
+        ArticleResponseDto updatedArticleDto = null;
         try{
-            updatedArticleDto = articleService.updateArticle(articleDto);
+            updatedArticleDto = ArticleResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto()));
         }catch(EntityNotFoundException e){
             return ResponseEntity.notFound().build();
         }
