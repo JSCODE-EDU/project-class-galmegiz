@@ -50,10 +50,10 @@ public class ArticleController {
     public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto,
                                                 BindingResult bindingResult) throws URISyntaxException {
         if(bindingResult.hasErrors()){
-            return ResponseEntity.badRequest().body(bindingResult);
+            return ResponseEntity.badRequest().body("게시글 작성에 오류가 있습니다.");
         }
-        ArticleDto newArticleDto = articleService.createArticle(articleRequestDto.toArticleDto());
-        URI createdUrl = new URI("/articles/" + newArticleDto.getId());
+        ArticleResponseDto newArticleResponseDto = ArticleResponseDto.fromDto(articleService.createArticle(articleRequestDto.toArticleDto()));
+        URI createdUrl = new URI("/articles/" + newArticleResponseDto.getId());
         return ResponseEntity.created(createdUrl).body("게시글이 생성되었습니다.");
     }
 
