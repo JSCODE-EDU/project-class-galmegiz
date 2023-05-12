@@ -31,6 +31,10 @@ public class ArticleDto {
         this.createdAt = createdAt;
     }
 
+    public static ArticleDto of(Long id, String title, String content){
+        return new ArticleDto(id, title, content);
+    }
+
 
     public static ArticleDto fromEntity(Article article){
         return new ArticleDto(article.getId(), article.getTitle(), article.getContent(), article.getCreatedAt());
