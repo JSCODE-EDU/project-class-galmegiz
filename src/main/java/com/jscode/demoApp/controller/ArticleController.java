@@ -14,9 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
     @GetMapping("/articles")
-    public ResponseEntity<List<ArticleResponseDto>> getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
+    public ResponseEntity getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
                                                                 @RequestParam(name="searchKeyword", required = false, defaultValue = "")String searchKeyword){
         List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchType, searchKeyword)
                                                                 .stream()
@@ -34,7 +36,7 @@ public class ArticleController {
     }
 
     @GetMapping("/articles/{id}")
-    public ResponseEntity<ArticleResponseDto> getArticle(@PathVariable Long id){
+    public ResponseEntity getArticle(@PathVariable Long id){
         ArticleResponseDto articleResponseDto = null;
         try{
             articleResponseDto = ArticleResponseDto.fromDto(articleService.getArticle(id));
@@ -45,14 +47,18 @@ public class ArticleController {
     }
 
     @PostMapping("/articles/form")
-    public ResponseEntity<String> createArticle(ArticleRequestDto articleRequestDto) throws URISyntaxException {
+    public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto,
+                                                BindingResult bindingResult) throws URISyntaxException {
+        if(bindingResult.hasErrors()){
+            return ResponseEntity.badRequest().body(bindingResult);
+        }
         ArticleDto newArticleDto = articleService.createArticle(articleRequestDto.toArticleDto());
         URI createdUrl = new URI("/articles/" + newArticleDto.getId());
         return ResponseEntity.created(createdUrl).body("게시글이 생성되었습니다.");
     }
 
     @PutMapping("/articles/{id}")
-    public ResponseEntity<ArticleResponseDto> updateArticle(@RequestBody ArticleRequestDto articleRequestDto){
+    public ResponseEntity updateArticle(@RequestBody ArticleRequestDto articleRequestDto){
         ArticleResponseDto updatedArticleDto = null;
         try{
             updatedArticleDto = ArticleResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto()));
@@ -63,7 +69,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/articles/{id}")
-    public ResponseEntity<String> deleteArticle(@PathVariable Long id){
+    public ResponseEntity deleteArticle(@PathVariable Long id){
         try{
             articleService.deleteArticle(id);
         }catch (EntityNotFoundException e){
