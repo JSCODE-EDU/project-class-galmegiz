@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.time.LocalTime.now;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -86,7 +87,7 @@ public class ArticleControllerTest {
     @DisplayName("[POST]게시글 생성 테스트(입력값 오류)")
     @MethodSource("createArticleFailTest")
     @ParameterizedTest(name = "[{index}] message : {2}")
-    public void createArticleFailTest(String title, String content, String message) throws Exception {
+    public void createArticleFailTest(String title, String content, String message, int numOfErrors) throws Exception {
         MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
         param.add("title", title);
         param.add("content", content);
@@ -94,6 +95,7 @@ public class ArticleControllerTest {
         mvc.perform(post("/articles/form")
                     .params(param))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.*", hasSize(numOfErrors)))
                 .andDo(print());
 
     }
@@ -105,10 +107,12 @@ public class ArticleControllerTest {
         }
         String largeContent = sb.toString();
         return Stream.of(
-                arguments(null, null, "입력값 없음"),
-                arguments("title", null, "내용 없음"),
-                arguments(null, "content", "제목 없음"),
-                arguments("title", largeContent, "내용 1000자 초과")
+                arguments(null, null, "입력값 없음", 2),
+                arguments("title", null, "내용 없음", 1),
+                arguments(null, "content", "제목 없음", 1),
+                arguments(" ", "content", "제목 공백", 1),
+                arguments(" ", largeContent, "제목 공백, 내용 1000자 초과", 2),
+                arguments("title", largeContent, "내용 1000자 초과", 1)
         );
     }
 /*
