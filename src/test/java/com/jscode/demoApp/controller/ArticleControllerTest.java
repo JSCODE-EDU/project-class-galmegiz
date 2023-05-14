@@ -1,7 +1,9 @@
 package com.jscode.demoApp.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
+import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.service.ArticleService;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
@@ -28,10 +31,9 @@ import static java.time.LocalTime.now;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ArticleController.class)
@@ -115,6 +117,74 @@ public class ArticleControllerTest {
                 arguments(" ", largeContent, "제목 공백, 내용 1000자 초과", 2),
                 arguments("title", largeContent, "내용 1000자 초과", 1)
         );
+    }
+
+    @DisplayName("[DELETE]게시글 삭제 테스트(게시글 O)")
+    @Test
+    public void deleteArticleTest() throws Exception {
+        willDoNothing().given(articleService).deleteArticle(any(Long.class));
+
+        mvc.perform(delete("/articles/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("게시물이 삭제되었습니다."));
+
+    }
+
+    @DisplayName("[DELETE]게시물 삭제 테스트(게시글 X)")
+    @Test
+    public void deleteArticleFailTest() throws Exception{
+        willThrow(EntityNotFoundException.class).given(articleService).deleteArticle(any(Long.class));
+
+        mvc.perform(delete("/articles/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @DisplayName("[PUT]게시물 수정 테스트(게시글 O)")
+    @Test
+    public void updateArticleTest() throws Exception{
+        //request를 mocking할 순 없을가?
+        ObjectMapper request = new ObjectMapper();
+        Map<String, String> param = new HashMap<>();
+        param.put("id", "1");
+        param.put("title", "titl");
+        param.put("content", "content");
+        given(articleService.updateArticle(any(ArticleDto.class))).willReturn(new ArticleDto(2L, "수정 제목", "수정 내용"));
+
+        mvc.perform(put("/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request.writeValueAsString(param)))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("[PUT]게시물 수정 테스트(게시글 X)")
+    @Test
+    public void updateArticleFailTest() throws Exception{
+        ObjectMapper request = new ObjectMapper();
+        Map<String, String> param = new HashMap<>();
+        param.put("id", "1");
+        param.put("title", "titl");
+        param.put("content", "content");
+
+
+        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new EntityNotFoundException());
+
+        mvc.perform(put("/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request.writeValueAsString(param)))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @DisplayName("[Common] DataBindingError 테스트 ")
+    @Test()
+    void requestBodyBindingErrorTest() throws Exception {
+        given(articleService.updateArticle(any(ArticleDto.class))).willReturn(null);
+
+        mvc.perform(put("/articles/1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("JSON형식으로 보내주세요."))
+                .andDo(print());
     }
 /*
     @Test
