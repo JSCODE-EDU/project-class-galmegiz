@@ -1,26 +1,23 @@
 package com.jscode.demoApp.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jscode.demoApp.constant.SearchType;
-import com.jscode.demoApp.domain.Article;
-import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,7 +48,7 @@ public class ArticleController {
 
     @PostMapping("/articles/form")
     public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto,
-                                                BindingResult bindingResult) throws URISyntaxException {
+                                        BindingResult bindingResult) throws URISyntaxException {
         /*
             bindingResult의 값을 errors Map에 담아 응답으로 보내준다.
             {에러 필드명1 : {에러 정보1, 에러 정보 2}, 에러 필드명2: {에러 정보1, 에러 정보2}라는
