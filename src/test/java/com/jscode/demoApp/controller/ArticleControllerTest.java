@@ -61,7 +61,8 @@ public class ArticleControllerTest {
 
         given(articleService.getArticle(any(Long.class))).willThrow(new EntityNotFoundException());
 
-        mvc.perform(get("/articles/100"))
+        mvc.perform(get("/articles/100")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNotFound());
     }
 
