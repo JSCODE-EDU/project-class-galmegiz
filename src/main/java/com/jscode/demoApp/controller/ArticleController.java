@@ -25,6 +25,7 @@ import java.util.Map;
 public class ArticleController {
 
     private final ArticleService articleService;
+
     @GetMapping("/articles")
     public ResponseEntity getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
                                                                 @RequestParam(name="searchKeyword", required = false, defaultValue = "")String searchKeyword){
@@ -37,12 +38,7 @@ public class ArticleController {
 
     @GetMapping("/articles/{id}")
     public ResponseEntity getArticle(@PathVariable Long id){
-        ArticleResponseDto articleResponseDto = null;
-        try{
-            articleResponseDto = ArticleResponseDto.fromDto(articleService.getArticle(id));
-        }catch(EntityNotFoundException e){
-            return ResponseEntity.notFound().build();
-        }
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.fromDto(articleService.getArticle(id));
         return ResponseEntity.ok(articleResponseDto);
     }
 
@@ -70,22 +66,13 @@ public class ArticleController {
 
     @PutMapping("/articles/{id}")
     public ResponseEntity updateArticle(@RequestBody ArticleRequestDto articleRequestDto){
-        ArticleResponseDto updatedArticleDto = null;
-        try{
-            updatedArticleDto = ArticleResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto()));
-        }catch(EntityNotFoundException e){
-            return ResponseEntity.notFound().build();
-        }
+        ArticleResponseDto updatedArticleDto = ArticleResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto()));
         return ResponseEntity.ok(updatedArticleDto);
     }
 
     @DeleteMapping("/articles/{id}")
     public ResponseEntity deleteArticle(@PathVariable Long id){
-        try{
-            articleService.deleteArticle(id);
-        }catch (EntityNotFoundException e){
-            return ResponseEntity.notFound().build();
-        }
+        articleService.deleteArticle(id);
         return ResponseEntity.ok("게시물이 삭제되었습니다.");
     }
 
