@@ -10,6 +10,7 @@ public interface ArticleRepository {
     public Article save(Article article);
     public List<Article> findAll();
     public Optional<Article> findById(Long id);
+    public List<Article> findByTitle(String title);
     public void delete(Article article);
 
 }

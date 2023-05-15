@@ -1,5 +1,6 @@
 package com.jscode.demoApp.service;
 
+import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.repository.ArticleRepository;
@@ -10,20 +11,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.IntStream;
 
-//@SpringBootTest
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 @Transactional
 public class ArticleServiceIETest {
 
 
 
-    @InjectMocks private ArticleService articleService;
-    @Mock private ArticleRepository articleRepository;
+    @Autowired
+    private ArticleService articleService;
+    @Autowired private ArticleRepository articleRepository;
 
 
     public void saveArticles(){
@@ -49,6 +54,7 @@ public class ArticleServiceIETest {
                 .content(content)
                 .build();
         ArticleDto newArticle = articleService.createArticle(ArticleDto.fromEntity(article));
+        System.out.println("newArticle = " + newArticle.getId());
         ArticleDto findArticle = articleService.getArticle(newArticle.getId());
         Assertions.assertThat(findArticle.getTitle()).isEqualTo(title);
     }
@@ -100,6 +106,19 @@ public class ArticleServiceIETest {
         ArticleDto result = articleService.updateArticle(updatedArticleDto);
         System.out.println("result.getTitle() = " + result.getTitle());
         Assertions.assertThat(articleService.getArticle(id).getTitle()).isEqualTo(result.getTitle());
+
+    }
+
+    @DisplayName("게시물 검색 테스트")
+    @Test
+    public void articleSearchTest(){
+        String title = "찾을 제목";
+        String content = "내용 무";
+
+        IntStream.range(0, 5).forEach(i -> articleService.createArticle(new ArticleDto(null, title, content)));
+
+        List<ArticleDto> articles = articleService.searchArticle(SearchType.TITLE, title);
+        Assertions.assertThat(articles.size()).isEqualTo(5);
 
     }
 }
