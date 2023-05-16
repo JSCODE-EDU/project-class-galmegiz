@@ -63,6 +63,7 @@ public class ArticleService {
     }
 
     public void deleteArticle(Long id){
+        //Todo : findById() 메소드 자체에서 값이 없을 경우 EntityNotFoundException을 throw하면 코드 중복을 줄일 수 있을 듯 하다.
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> {
                     throw new EntityNotFoundException("해당 게시글은 존재하지 않습니다");

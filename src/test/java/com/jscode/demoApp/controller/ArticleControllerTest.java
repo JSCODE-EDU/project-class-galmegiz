@@ -176,6 +176,26 @@ public class ArticleControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("[PUT]게시물 수정 테스트(게시글 ID에 String 입력)")
+    @Test
+    public void updateArticleWrongIdTypeFailTest() throws Exception{
+        ObjectMapper request = new ObjectMapper();
+        Map<String, String> param = new HashMap<>();
+        param.put("id", "string");
+        param.put("title", "titl");
+        param.put("content", "content");
+
+
+        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new EntityNotFoundException());
+
+        mvc.perform(put("/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request.writeValueAsString(param)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("JSON형식으로 보내주세요."))
+                .andDo(print());
+    }
+
     @DisplayName("[Common] DataBindingError 테스트 ")
     @Test()
     void requestBodyBindingErrorTest() throws Exception {
