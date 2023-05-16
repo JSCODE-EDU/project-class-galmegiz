@@ -20,10 +20,20 @@ public class ArticleAdvice {
         return ex.getMessage();
     }
 
+    //@RequestBody에 text/html형식 데이터가 올 때
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public String typeMismatchHandler(HttpMessageNotReadableException ex){
+    public String messageNotReadableExHandler(HttpMessageNotReadableException ex){
 
         return "JSON형식으로 보내주세요.";
+    }
+
+    //검색 타입을 잘못지정하였을 때
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public void illegalArgumentExHandler(IllegalArgumentException ex){
+
+        throw new IllegalStateException("유효하지 않은 입력입니다.");
     }
 }
