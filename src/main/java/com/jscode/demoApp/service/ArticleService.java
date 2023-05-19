@@ -6,7 +6,9 @@ import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
@@ -26,6 +28,8 @@ public class ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> {
             throw new EntityNotFoundException("게시글이 존재하지 않습니다");
+            //아래 코드로도 예외처리 가능
+            //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다.", new EntityNotFoundException());
         });
         return ArticleDto.fromEntity(article);
     }
