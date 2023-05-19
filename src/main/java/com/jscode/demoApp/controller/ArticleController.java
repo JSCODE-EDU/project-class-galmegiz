@@ -1,13 +1,17 @@
 package com.jscode.demoApp.controller;
 
 import com.jscode.demoApp.constant.SearchType;
+import com.jscode.demoApp.controller.validator.SearchValidator;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
+import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
@@ -25,11 +29,26 @@ import java.util.Map;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final SearchValidator searchValidator;
+
+    @InitBinder("searchRequestDto")
+    public void init(WebDataBinder dataBinder){
+        dataBinder.addValidators(searchValidator);
+    }
 
     @GetMapping("/articles")
-    public ResponseEntity getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
-                                                                @RequestParam(name="searchKeyword", required = false, defaultValue = "")String searchKeyword){
-        List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchType, searchKeyword)
+    public ResponseEntity getArticles(@Validated SearchRequestDto searchRequestDto, BindingResult bindingResult){
+        //Todo : bindingResult 출력 메소드 별도 구현
+        if(bindingResult.hasErrors()){
+            log.info("controller check : {}", searchRequestDto);
+            Map<String, List<String>> errors = new HashMap<>();
+            bindingResult.getFieldErrors()
+                    .forEach(e -> errors
+                            .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
+                            .add(e.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
+        }
+        List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchRequestDto)
                                                                 .stream()
                                                                 .map(ArticleResponseDto::fromDto)
                                                                 .toList();

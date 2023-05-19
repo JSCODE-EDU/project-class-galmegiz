@@ -1,9 +1,12 @@
 package com.jscode.demoApp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jscode.demoApp.constant.SearchType;
+import com.jscode.demoApp.controller.validator.SearchValidator;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
+import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.service.ArticleService;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ArticleController.class)
+@Import(SearchValidator.class)
 public class ArticleControllerTest {
     @Autowired MockMvc mvc;
 
@@ -44,7 +49,7 @@ public class ArticleControllerTest {
     ArticleService articleService;
 
     @Test
-    @DisplayName("[GET]특정 게시글 조회 테스트(게시글 O)")
+    @DisplayName("[GET]게시글 Id 이용 조회 테스트(게시글 O)")
     public void getArticleTest() throws Exception {
         Long articleId = 1L;
         given(articleService.getArticle(articleId)).willReturn(new ArticleDto(articleId, "title", "content"));
@@ -58,7 +63,7 @@ public class ArticleControllerTest {
     }
 
     @Test
-    @DisplayName("[GET]특정 게시글 조회 테스트(게시글 X)")
+    @DisplayName("[GET]게시글 Id 이용 조회 테스트(게시글 X)")
     public void getArticleFailTest() throws Exception {
 
         given(articleService.getArticle(any(Long.class))).willThrow(new EntityNotFoundException());
@@ -67,6 +72,78 @@ public class ArticleControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("[GET]게시글 검색 테스트(SearchType Null)")
+    public void getArticleByNoneTest() throws Exception {
+        SearchRequestDto dto = new SearchRequestDto(null, null);
+        given(articleService.searchArticle(dto)).willReturn(new ArrayList<ArticleDto>());
+
+        mvc.perform(get("/articles"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("[GET]게시글 유효하지 않은 검색 테스트(Invalid SearchType1)")
+    public void getArticleByInvalidSearchType() throws Exception {
+        MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+        param.add("searchType", "CONTENT");
+        param.add("searchKeyword", "");
+
+
+        given(articleService.searchArticle(any(SearchRequestDto.class))).willReturn(new ArrayList<ArticleDto>());
+
+        mvc.perform(get("/articles")
+                        .queryParams(param))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("[GET]게시글 유효하지 않은 검색 테스트(Invalid SearchType2)")
+    public void getArticleByInvalidSearchTypeAndShort() throws Exception {
+        MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+        param.add("searchType", "TITLE1");
+        param.add("searchKeyword", "aaa");
+
+        given(articleService.searchArticle(any(SearchRequestDto.class))).willReturn(new ArrayList<ArticleDto>());
+
+        mvc.perform(get("/articles")
+                        .queryParams(param))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.*", hasSize(1)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("[GET]게시글 제목 검색 테스트(SearchType TITLE)")
+    public void getArticleByTitleTest() throws Exception {
+        MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+        param.add("searchType", "TITLE");
+        param.add("searchKeyword", "wow");
+        given(articleService.searchArticle(any(SearchRequestDto.class))).willReturn(new ArrayList<ArticleDto>());
+
+        mvc.perform(get("/articles")
+                        .queryParams(param))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("[GET]게시글 제목 검색 실패 테스트(SearchType TITLE)")
+    public void getArticleByTitleLengthFailTest() throws Exception {
+        MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+        param.add("searchType", "TITLE");
+        param.add("searchKeyword", "");
+        given(articleService.searchArticle(any(SearchRequestDto.class))).willReturn(new ArrayList<ArticleDto>());
+
+        mvc.perform(get("/articles")
+                        .queryParams(param))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
 
     @Test
     @DisplayName("[POST]게시글 생성 테스트(정상)")
@@ -173,6 +250,26 @@ public class ArticleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request.writeValueAsString(param)))
                 .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @DisplayName("[PUT]게시물 수정 테스트(게시글 ID에 String 입력)")
+    @Test
+    public void updateArticleWrongIdTypeFailTest() throws Exception{
+        ObjectMapper request = new ObjectMapper();
+        Map<String, String> param = new HashMap<>();
+        param.put("id", "string");
+        param.put("title", "titl");
+        param.put("content", "content");
+
+
+        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new EntityNotFoundException());
+
+        mvc.perform(put("/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request.writeValueAsString(param)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("JSON형식으로 보내주세요."))
                 .andDo(print());
     }
 

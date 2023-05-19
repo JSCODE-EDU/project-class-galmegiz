@@ -36,7 +36,7 @@ public class ArticleRepositoryTest {
             articleRepository.save(article);
         }
     }
-    @DisplayName("게시물 조회 테스트")
+    @DisplayName("[R]게시물 조회 테스트")
     @Test
     @Transactional
     public void articleFindTest(){
@@ -52,19 +52,18 @@ public class ArticleRepositoryTest {
         Assertions.assertThat(article).isNotNull();
     }
 
-    @DisplayName("전체 게시물 조회 테스트")
+    @DisplayName("[R]전체 게시물 조회 테스트")
     @Test
     @Transactional
     public void articleFindAllTest(){
-        saveArticles();
-        saveArticles();
+
         List<Article> articles = articleRepository.findAll();
         System.out.println("========");
         articles.stream().forEach(System.out::println);
         Assertions.assertThat(articles.size()).isEqualTo(10);
     }
 
-    @DisplayName("게시물 삭제 테스트")
+    @DisplayName("[D]게시물 삭제 테스트")
     @Test
     @Transactional
     public void deleteArticleTest(){
@@ -79,7 +78,7 @@ public class ArticleRepositoryTest {
         Assertions.assertThat(article.isPresent()).isFalse();
     }
 
-    @DisplayName("제목 검색 테스트")
+    @DisplayName("[R]제목 검색 테스트")
     @Test
     @Transactional
     public void findByTitleTest(){

@@ -3,19 +3,16 @@ package com.jscode.demoApp.service;
 import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
+import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +31,13 @@ public class ArticleService {
         return ArticleDto.fromEntity(article);
     }
 
-    public List<ArticleDto> searchArticle(SearchType searchType, String searchKeyword){
+    public List<ArticleDto> searchArticle(SearchRequestDto searchRequestDto){
         List<Article> articles = new ArrayList<>();
 
-        if(searchType == null || StringUtils.isEmptyOrWhitespace(searchKeyword)){
+        if(searchRequestDto.getSearchType() == null){
             articles = articleRepository.findAll();
-        }else if(searchType == SearchType.TITLE){
-            articles = articleRepository.findByTitle(searchKeyword);
+        }else if(searchRequestDto.getSearchType() == SearchType.TITLE){
+            articles = articleRepository.findByTitle(searchRequestDto.getSearchKeyword());
         }else{ //ToDo : 향후 구현
             articles = articleRepository.findAll();
         }
@@ -63,6 +60,7 @@ public class ArticleService {
     }
 
     public void deleteArticle(Long id){
+        //Todo : findById() 메소드 자체에서 값이 없을 경우 EntityNotFoundException을 throw하면 코드 중복을 줄일 수 있을 듯 하다.
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> {
                     throw new EntityNotFoundException("해당 게시글은 존재하지 않습니다");
