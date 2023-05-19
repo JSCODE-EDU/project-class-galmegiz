@@ -3,6 +3,7 @@ package com.jscode.demoApp.service;
 import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
+import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.repository.ArticleRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -43,7 +45,7 @@ public class ArticleServiceIETest {
         }
     }
 
-    @DisplayName("id로 게시글 찾기 테스트")
+    @DisplayName("[조회] id로 게시글 찾기 테스트")
     @Test
     public void getArticleTest(){
         System.out.println(articleRepository);
@@ -59,7 +61,7 @@ public class ArticleServiceIETest {
         Assertions.assertThat(findArticle.getTitle()).isEqualTo(title);
     }
 
-    @DisplayName("게시글 찾기 실패 테스트")
+    @DisplayName("[조회] 게시글 찾기 실패 테스트")
     @Test
     public void getArticleFailTest(){
         Assertions.assertThatThrownBy(() -> {
@@ -67,7 +69,7 @@ public class ArticleServiceIETest {
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
-    @DisplayName("전체 게시글 찾기 테스트")
+    @DisplayName("[조회] 전체 게시글 조회 테스트")
     @Test
     public void getAllArticleTest(){
         saveArticles();
@@ -76,7 +78,7 @@ public class ArticleServiceIETest {
         Assertions.assertThat(articles.size()).isEqualTo(10);
     }
 
-    @DisplayName("게시글 삭제 테스트")
+    @DisplayName("[삭제] 게시글 삭제 테스트")
     @Test
     public void deleteArticleTest(){
         saveArticles();
@@ -92,7 +94,8 @@ public class ArticleServiceIETest {
         Assertions.assertThat(articles.size()).isEqualTo(10);
     }
 
-    @DisplayName("게시글 수정 테스트")
+
+    @DisplayName("[수정] 게시글 수정 테스트")
     @Test
     public void updateArticleTest(){
         String title = "제목 수정 전";
@@ -109,7 +112,7 @@ public class ArticleServiceIETest {
 
     }
 
-    @DisplayName("게시물 검색 테스트")
+    @DisplayName("[검색] 게시물 검색 테스트")
     @Test
     public void articleSearchTest(){
         String title = "찾을 제목";
@@ -117,8 +120,11 @@ public class ArticleServiceIETest {
 
         IntStream.range(0, 5).forEach(i -> articleService.createArticle(new ArticleDto(null, title, content)));
 
-        List<ArticleDto> articles = articleService.searchArticle(SearchType.TITLE, title);
+
+        List<ArticleDto> articles = articleService.searchArticle(new SearchRequestDto(SearchType.TITLE, title));
         Assertions.assertThat(articles.size()).isEqualTo(5);
 
     }
+
+
 }

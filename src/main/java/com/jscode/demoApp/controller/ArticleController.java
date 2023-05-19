@@ -1,13 +1,17 @@
 package com.jscode.demoApp.controller;
 
 import com.jscode.demoApp.constant.SearchType;
+import com.jscode.demoApp.controller.validator.SearchValidator;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
+import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
@@ -25,10 +29,26 @@ import java.util.Map;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final SearchValidator searchValidator;
+
+    @InitBinder("searchRequestDto")
+    public void init(WebDataBinder dataBinder){
+        dataBinder.addValidators(searchValidator);
+    }
+
     @GetMapping("/articles")
-    public ResponseEntity getArticles(@RequestParam(name="searchType", required = false)SearchType searchType,
-                                                                @RequestParam(name="searchKeyword", required = false, defaultValue = "")String searchKeyword){
-        List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchType, searchKeyword)
+    public ResponseEntity getArticles(@Validated SearchRequestDto searchRequestDto, BindingResult bindingResult){
+        //Todo : bindingResult 출력 메소드 별도 구현
+        if(bindingResult.hasErrors()){
+            log.info("controller check : {}", searchRequestDto);
+            Map<String, List<String>> errors = new HashMap<>();
+            bindingResult.getFieldErrors()
+                    .forEach(e -> errors
+                            .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
+                            .add(e.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
+        }
+        List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchRequestDto)
                                                                 .stream()
                                                                 .map(ArticleResponseDto::fromDto)
                                                                 .toList();
@@ -37,12 +57,7 @@ public class ArticleController {
 
     @GetMapping("/articles/{id}")
     public ResponseEntity getArticle(@PathVariable Long id){
-        ArticleResponseDto articleResponseDto = null;
-        try{
-            articleResponseDto = ArticleResponseDto.fromDto(articleService.getArticle(id));
-        }catch(EntityNotFoundException e){
-            return ResponseEntity.notFound().build();
-        }
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.fromDto(articleService.getArticle(id));
         return ResponseEntity.ok(articleResponseDto);
     }
 
@@ -70,22 +85,13 @@ public class ArticleController {
 
     @PutMapping("/articles/{id}")
     public ResponseEntity updateArticle(@RequestBody ArticleRequestDto articleRequestDto){
-        ArticleResponseDto updatedArticleDto = null;
-        try{
-            updatedArticleDto = ArticleResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto()));
-        }catch(EntityNotFoundException e){
-            return ResponseEntity.notFound().build();
-        }
+        ArticleResponseDto updatedArticleDto = ArticleResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto()));
         return ResponseEntity.ok(updatedArticleDto);
     }
 
     @DeleteMapping("/articles/{id}")
     public ResponseEntity deleteArticle(@PathVariable Long id){
-        try{
-            articleService.deleteArticle(id);
-        }catch (EntityNotFoundException e){
-            return ResponseEntity.notFound().build();
-        }
+        articleService.deleteArticle(id);
         return ResponseEntity.ok("게시물이 삭제되었습니다.");
     }
 
