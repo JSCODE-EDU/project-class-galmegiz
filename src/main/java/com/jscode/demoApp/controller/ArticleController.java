@@ -5,6 +5,8 @@ import com.jscode.demoApp.controller.validator.SearchValidator;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
+import com.jscode.demoApp.error.ErrorCode;
+import com.jscode.demoApp.error.exception.FieldBindingException;
 import com.jscode.demoApp.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,15 +40,10 @@ public class ArticleController {
 
     @GetMapping("/articles")
     public ResponseEntity getArticles(@Validated SearchRequestDto searchRequestDto, BindingResult bindingResult){
-        //Todo : bindingResult 출력 메소드 별도 구현
+
+        //코드 간 비교를 위해 현재 코드 형태 유지, Rest API에서는 굳이 BindingResult를 매개변수로 넘기지 않고 ExceptionHandler로 처리해도 될 듯 함
         if(bindingResult.hasErrors()){
-            log.info("controller check : {}", searchRequestDto);
-            Map<String, List<String>> errors = new HashMap<>();
-            bindingResult.getFieldErrors()
-                    .forEach(e -> errors
-                            .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
-                            .add(e.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
+            throw new FieldBindingException(ErrorCode.REQUEST_FIELD_ERROR, bindingResult);
         }
         List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchRequestDto)
                                                                 .stream()
@@ -62,22 +59,7 @@ public class ArticleController {
     }
 
     @PostMapping("/articles/form")
-    public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto,
-                                        BindingResult bindingResult) throws URISyntaxException {
-        /*
-            bindingResult의 값을 errors Map에 담아 응답으로 보내준다.
-            {에러 필드명1 : {에러 정보1, 에러 정보 2}, 에러 필드명2: {에러 정보1, 에러 정보2}라는
-            형식으로 json응답을 보내고 싶을 때 Map을 쓰지 앟는 더 적절한 방법이 있을까?
-            컨트롤러에서 여러 번 사용될 것 같으므로 별도 코드로 빼는 게 더 좋을 듯 하다.
-         */
-        if(bindingResult.hasErrors()){
-            Map<String, List<String>> errors = new HashMap<>();
-            bindingResult.getFieldErrors()
-                            .forEach(e -> errors
-                                    .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
-                                    .add(e.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
-        }
+    public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto) throws URISyntaxException {
         ArticleResponseDto newArticleResponseDto = ArticleResponseDto.fromDto(articleService.createArticle(articleRequestDto.toArticleDto()));
         URI createdUrl = new URI("/articles/" + newArticleResponseDto.getId());
         return ResponseEntity.created(createdUrl).body("게시글이 생성되었습니다.");
