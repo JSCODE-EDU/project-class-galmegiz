@@ -4,6 +4,7 @@ import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
+import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +38,7 @@ public class ArticleServiceUnitTest {
         given(articleRepository.findById(id)).willReturn(Optional.empty());
 
         Assertions.assertThatThrownBy(() -> articleService.getArticle(id))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
