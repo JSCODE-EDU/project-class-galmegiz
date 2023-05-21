@@ -1,0 +1,63 @@
+ifndef::snippets[]
+:snippets: build/generated-snippets
+endif::[]
+
+= Spring REST Docs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[GET-getArticle]]
+== GET 게시글 조회
+
+==== HTTP request
+
+include::{snippets}/GET-getArticle/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/GET-getArticle/http-response.adoc[]
+
+[[POST-createArticle]]
+== POST 게시글 생성
+
+==== HTTP request
+
+include::{snippets}/POST-createArticle/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/POST-createArticle//http-response.adoc[]
+
+[[PUT-updateArticle]]
+== PUT 게시글 생성
+
+==== HTTP request
+
+include::{snippets}/PUT-updateArticle/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/PUT-updateArticle//http-response.adoc[]
+
+[[DELETE-deleteArticle]]
+== DELTE 게시글 삭제
+
+==== HTTP request
+
+include::{snippets}/DELETE-deleteArticle/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/DELETE-deleteArticle/http-response.adoc[]
+
+[[GET-SearchArticle]]
+== GET 게시글 검색
+
+==== HTTP request
+
+include::{snippets}/GET-searchArticle/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/GET-searchArticle/http-response.adoc[]
