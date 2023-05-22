@@ -22,12 +22,12 @@ import java.util.*;
 @Slf4j
 @RestControllerAdvice(assignableTypes = ArticleController.class)
 public class ArticleAdvice {
-    ErrorResponseDto errorResponseDto;
+
     //@ResponseStatus(HttpStatus.NOT_FOUND) annotation이 있더라도 response에서 상태코드를 지정하면 response 상태 코드가 우선임
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity resourceNotFountExHandler(ResourceNotFoundException ex){
         //todo: API인 점을 고려해서 문자열보다는 부호화된 코드를 보내는 걸로 refactor필요
-        errorResponseDto = ErrorResponseDto.of(ex.getErrorCode());
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ex.getErrorCode());
         return ResponseEntity.status(ex.getStatus()).body(Optional.of(errorResponseDto));
     }
 
@@ -37,7 +37,7 @@ public class ArticleAdvice {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity messageNotReadableExHandler(HttpMessageNotReadableException ex){
-        errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE);
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
@@ -61,7 +61,7 @@ public class ArticleAdvice {
                             .add(e.getDefaultMessage()));
         }
 
-        errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
@@ -83,7 +83,7 @@ public class ArticleAdvice {
                             .add(e.getDefaultMessage()));
         }
 
-        errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
