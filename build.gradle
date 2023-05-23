@@ -4,8 +4,6 @@ plugins {
 	id 'org.springframework.boot' version '2.7.11'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id "org.asciidoctor.jvm.convert" version "3.3.2"
-
-
 }
 
 group = 'com.jscode'
@@ -42,9 +40,10 @@ dependencies {
 }
 
 /******* Start Spring Rest Docs *******/
-ext {
+ext ({
 	snippetsDir = file("$buildDir/generated-snippets")
-}
+})
+
 /* 이건 오류
 ext {
 	snippetsDir = file('build/generated-snippets')
@@ -52,13 +51,23 @@ ext {
 */
 test {
 	useJUnitPlatform()
-	outputs.dir snippetsDir
+	//systemProperty 'org.springframework.restdocs.outputDir', snippetsDir
+	//outputs.dir snippetsDir
 }
 
 asciidoctor {
+	doFirst {
+		delete file("src/main/resources/static/docs")
+	}
 	dependsOn test
-	inputs.dir snippetsDir
+	//inputs.dir snippetsDir
 }
+
+/* 같은 코드
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+ */
 
 bootJar {
 	dependsOn asciidoctor
@@ -68,7 +77,7 @@ bootJar {
 
 task copyDocument(type: Copy) {
 	dependsOn asciidoctor
-	from file("build/docs/asciidoc")
+	from file("${asciidoctor.outputDir}")
 	into file("src/main/resources/static/docs")
 }
 
