@@ -37,7 +37,7 @@ public class ArticleAdvice {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity messageNotReadableExHandler(HttpMessageNotReadableException ex){
-        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE);
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.REQUEST_FIELD_ERROR);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
@@ -64,6 +64,8 @@ public class ArticleAdvice {
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
+
+
 
     @ExceptionHandler(FieldBindingException.class)
     public ResponseEntity FieldBindingExExHandler(FieldBindingException ex){
@@ -93,5 +95,11 @@ public class ArticleAdvice {
     public void illegalArgumentExHandler(IllegalArgumentException ex){
 
         throw new IllegalStateException("유효하지 않은 입력입니다.");
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity globalExHandler(Throwable ex){
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.SEVER_GLOBAL_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
 }
