@@ -9,6 +9,7 @@ import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.error.ErrorCode;
+import com.jscode.demoApp.error.exception.FieldBindingException;
 import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.service.ArticleService;
 import org.junit.jupiter.api.DisplayName;
@@ -265,13 +266,11 @@ public class ArticleControllerTest {
         param.put("content", "content");
 
 
-        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new EntityNotFoundException());
-
         mvc.perform(put("/articles/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request.writeValueAsString(param)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("A-C-001"))
+                .andExpect(jsonPath("$.code").value(ErrorCode.REQUEST_FIELD_ERROR.getCode()))
                 .andDo(print());
     }
 
@@ -282,7 +281,18 @@ public class ArticleControllerTest {
 
         mvc.perform(put("/articles/1"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("A-C-001"))
+                .andExpect(jsonPath("$.code").value(ErrorCode.REQUEST_FIELD_ERROR.getCode()))
+                .andDo(print());
+    }
+
+    @DisplayName("[Common] Global Error 처리 테스트 ")
+    @Test()
+    void globalErrorTest() throws Exception {
+        given(articleService.getArticle(any(Long.class))).willThrow(new RuntimeException());
+
+        mvc.perform(get("/articles/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value(ErrorCode.SEVER_GLOBAL_ERROR.getCode()))
                 .andDo(print());
     }
 /*
