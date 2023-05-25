@@ -52,7 +52,7 @@ ext {
 test {
 	useJUnitPlatform()
 	//systemProperty 'org.springframework.restdocs.outputDir', snippetsDir
-	//outputs.dir snippetsDir
+	outputs.dir snippetsDir
 }
 
 asciidoctor {
@@ -60,7 +60,7 @@ asciidoctor {
 		delete file("src/main/resources/static/docs")
 	}
 	dependsOn test
-	//inputs.dir snippetsDir
+	inputs.dir snippetsDir
 }
 
 /* 같은 코드
@@ -69,12 +69,13 @@ asciidoctor.doFirst {
 }
  */
 
+/*
 bootJar {
 	dependsOn asciidoctor
 	from asciidoctor.outputDir
 	into 'static/docs'
 }
-
+*/
 task copyDocument(type: Copy) {
 	dependsOn asciidoctor
 	from file("${asciidoctor.outputDir}")
