@@ -73,7 +73,8 @@ public class ArticleControllerTest {
 
         mvc.perform(get("/articles/100")
                         .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(ErrorCode.RESOURCE_NOT_FOUND.getCode()));
     }
 
     @Test
