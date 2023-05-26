@@ -8,6 +8,9 @@ import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ArticleResponseDto;
+import com.jscode.demoApp.error.ErrorCode;
+import com.jscode.demoApp.error.exception.FieldBindingException;
+import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.service.ArticleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,7 +69,7 @@ public class ArticleControllerTest {
     @DisplayName("[GET]게시글 Id 이용 조회 테스트(게시글 X)")
     public void getArticleFailTest() throws Exception {
 
-        given(articleService.getArticle(any(Long.class))).willThrow(new EntityNotFoundException());
+        given(articleService.getArticle(any(Long.class))).willThrow(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
 
         mvc.perform(get("/articles/100")
                         .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -112,7 +115,7 @@ public class ArticleControllerTest {
         mvc.perform(get("/articles")
                         .queryParams(param))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.*", hasSize(1)))
+                .andExpect(jsonPath("$.*", hasSize(3)))
                 .andDo(print());
     }
 
@@ -171,11 +174,11 @@ public class ArticleControllerTest {
         MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
         param.add("title", title);
         param.add("content", content);
-
+        //Todo : 에러 필드 구체적으로 검사하도록 테스트코드 수정 필요
         mvc.perform(post("/articles/form")
                     .params(param))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.*", hasSize(numOfErrors)))
+                .andExpect(jsonPath("$.*", hasSize(3)))
                 .andDo(print());
 
     }
@@ -210,7 +213,7 @@ public class ArticleControllerTest {
     @DisplayName("[DELETE]게시물 삭제 테스트(게시글 X)")
     @Test
     public void deleteArticleFailTest() throws Exception{
-        willThrow(EntityNotFoundException.class).given(articleService).deleteArticle(any(Long.class));
+        willThrow(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND)).given(articleService).deleteArticle(any(Long.class));
 
         mvc.perform(delete("/articles/1"))
                 .andExpect(status().isNotFound());
@@ -244,7 +247,7 @@ public class ArticleControllerTest {
         param.put("content", "content");
 
 
-        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new EntityNotFoundException());
+        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
 
         mvc.perform(put("/articles/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -263,13 +266,11 @@ public class ArticleControllerTest {
         param.put("content", "content");
 
 
-        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new EntityNotFoundException());
-
         mvc.perform(put("/articles/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request.writeValueAsString(param)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("JSON형식으로 보내주세요."))
+                .andExpect(jsonPath("$.code").value(ErrorCode.REQUEST_FIELD_ERROR.getCode()))
                 .andDo(print());
     }
 
@@ -280,7 +281,18 @@ public class ArticleControllerTest {
 
         mvc.perform(put("/articles/1"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("JSON형식으로 보내주세요."))
+                .andExpect(jsonPath("$.code").value(ErrorCode.REQUEST_FIELD_ERROR.getCode()))
+                .andDo(print());
+    }
+
+    @DisplayName("[Common] Global Error 처리 테스트 ")
+    @Test()
+    void globalErrorTest() throws Exception {
+        given(articleService.getArticle(any(Long.class))).willThrow(new RuntimeException());
+
+        mvc.perform(get("/articles/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value(ErrorCode.SEVER_GLOBAL_ERROR.getCode()))
                 .andDo(print());
     }
 /*

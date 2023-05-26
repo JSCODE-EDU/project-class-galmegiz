@@ -4,6 +4,7 @@ import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
+import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -66,7 +67,7 @@ public class ArticleServiceIETest {
     public void getArticleFailTest(){
         Assertions.assertThatThrownBy(() -> {
             articleService.getArticle(100L);})
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @DisplayName("[조회] 전체 게시글 조회 테스트")
