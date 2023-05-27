@@ -2,6 +2,7 @@ package com.jscode.demoApp.error.advice;
 
 import com.jscode.demoApp.dto.response.ErrorResponseDto;
 import com.jscode.demoApp.error.ErrorCode;
+import com.jscode.demoApp.error.exception.AuthorizeException;
 import com.jscode.demoApp.error.exception.FieldBindingException;
 import com.jscode.demoApp.error.exception.MemberDuplicateException;
 import com.jscode.demoApp.error.exception.ResourceNotFoundException;
@@ -125,5 +126,11 @@ public class GlobalAdvice {
     public ResponseEntity memberDupExHandler(MemberDuplicateException ex){
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.Member_Duplicate_Error, ex.getDuplicatedEmail());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(AuthorizeException.class)
+    public ResponseEntity authorizeExHandler(AuthorizeException ex){
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ex.getErrorCode());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDto);
     }
 }
