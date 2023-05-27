@@ -2,10 +2,12 @@ package com.jscode.demoApp.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jscode.demoApp.config.SecurityConfig;
 import com.jscode.demoApp.dto.MemberDto;
 import com.jscode.demoApp.dto.request.MemberRegisterRequest;
 import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.MemberDuplicateException;
+import com.jscode.demoApp.jwt.JwtTokenProvider;
 import com.jscode.demoApp.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,10 +17,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.*;
@@ -31,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(MemberController.class)
+@Import({SecurityConfig.class, JwtTokenProvider.class})
 public class MemberControllerTest {
 
     @Autowired
@@ -50,7 +55,7 @@ public class MemberControllerTest {
     public void memberRegisterTest() throws Exception {
         String email = "asb@naver.com";
         String password = "123456789";
-        MemberDto memberDto = MemberDto.of(1L, email, password);
+        MemberDto memberDto = MemberDto.of(1L, email, password, LocalDateTime.now());
 
         given(memberService.register(any(MemberDto.class))).willReturn(memberDto);
 
@@ -59,7 +64,7 @@ public class MemberControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(createRegisterRequest(email, password)))
                 .andExpect(status().isCreated())
-                .andExpect(content().string("회원가입을 성공하였습니다."));
+                .andExpect(content().string("회원가입에 성공하였습니다."));
     }
 
     @DisplayName("[POST] 회원가입 실패 테스트(중복 사용자)")
@@ -103,6 +108,7 @@ public class MemberControllerTest {
                 arguments("sdfsdf@naver.com", "1234 56789", "pw 공백 포함")
         );
     }
+
 
 
 

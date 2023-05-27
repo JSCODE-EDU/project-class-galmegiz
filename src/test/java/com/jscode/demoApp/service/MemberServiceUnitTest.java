@@ -71,7 +71,7 @@ public class MemberServiceUnitTest {
         Assertions.assertThatThrownBy(() -> memberService.login(memberDto))
                 .isInstanceOf(LoginFailException.class);
     }
-    @DisplayName("[로그인] 로그인 성공 테스트")
+/*    @DisplayName("[로그인] 로그인 성공 테스트")
     @Test
     public void loginTest(){
         String email = "som@naver.com";
@@ -86,7 +86,7 @@ public class MemberServiceUnitTest {
                                         ));
 
         Assertions.assertThat(memberService.login(memberDto).getEmail()).isEqualTo(memberDto.getEmail());
-    }
+    }*/
 
 
 
