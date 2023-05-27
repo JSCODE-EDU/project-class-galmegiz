@@ -10,7 +10,6 @@ import com.jscode.demoApp.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class ArticleService {
     public ArticleDto getArticle(Long id){
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> {
-            throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new ResourceNotFoundException(ErrorCode.ARTICLE_NOT_FOUND);
             //아래 코드로도 예외처리 가능
             //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다.", new EntityNotFoundException());
         });
@@ -65,7 +64,7 @@ public class ArticleService {
         //Todo : findById() 메소드 자체에서 값이 없을 경우 EntityNotFoundException을 throw하면 코드 중복을 줄일 수 있을 듯 하다.
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> {
-                    throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
+                    throw new ResourceNotFoundException(ErrorCode.ARTICLE_NOT_FOUND);
                 });
         articleRepository.delete(article);
     }
@@ -73,7 +72,7 @@ public class ArticleService {
     public ArticleDto updateArticle(ArticleDto articleDto){
         Article article = articleRepository.findById(articleDto.getId())
                 .orElseThrow(() -> {
-                    throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
+                    throw new ResourceNotFoundException(ErrorCode.ARTICLE_NOT_FOUND);
                 });
         article.update(articleDto.getTitle(), articleDto.getContent());
         return ArticleDto.fromEntity(article);
