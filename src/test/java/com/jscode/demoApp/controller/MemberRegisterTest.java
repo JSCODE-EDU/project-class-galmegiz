@@ -15,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -35,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(MemberController.class)
-@Import({SecurityConfig.class, JwtTokenProvider.class})
+@AutoConfigureMockMvc(addFilters = false)
 public class MemberControllerTest {
 
     @Autowired
@@ -79,9 +80,6 @@ public class MemberControllerTest {
                                 .content(createRegisterRequest(email, password)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.Member_Duplicate_Error.getCode()));
-
-
-
     }
 
     @DisplayName("[POST] 회원가입 실패 테스트(회원가입 요구조건 미충족)")
