@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(jwtTokenProvider.AUTHORIZATION_HEADER,JwtTokenProvider.HEADER_PREFIX + " " + jwtToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().println("로그인 성공");
+        response.getWriter().print("로그인 성공");
         response.setStatus(200);
     }
 
