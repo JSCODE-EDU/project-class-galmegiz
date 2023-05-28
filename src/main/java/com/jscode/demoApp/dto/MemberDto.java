@@ -31,4 +31,12 @@ public class MemberDto {
         return new MemberDto(member.getId(), member.getEmail(), member.getPassword(), member.getCreatedAt());
     }
 
+    public Member toEntity(){
+        return Member.builder()
+                .email(this.email)
+                .password(this.password)
+                .id(this.id)
+                .build();
+    }
+
 }

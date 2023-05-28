@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtErrorHandlingFilter extends OncePerRequestFilter {
+public class ErrorHandlingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -24,12 +24,13 @@ public class JwtErrorHandlingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }catch(LoginFailException e){
             String body = mapper.writeValueAsString(ErrorResponseDto.of(e.getErrorCode()));
-
+            //e.printStackTrace();
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(body);
         }catch(IllegalArgumentException e){
+            //e.printStackTrace();
             String body = mapper.writeValueAsString(ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE));
 
             response.setStatus(HttpStatus.BAD_REQUEST.value());

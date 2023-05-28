@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     SEVER_GLOBAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR , "G-A-001", "서버에 알 수 없는 오류가 발생했습니다."), //Global All Error : 특정 서비스에 종속되지 않는 Global Error
+    UNAUTHORIZED_RESOURCE_ACCESS(HttpStatus.UNAUTHORIZED , "G-A-002", "인가되지 않은 자원으로 접근하였습니다."), //Global All Error2 : 인가되지 않은 자원으로의 접근
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "A-S-001", "게시글이 존재하지 않습니다."), //Article Service Error : 게시글이 존재하지 않음
     INVALID_REQUEST_ENCODE(HttpStatus.BAD_REQUEST, "A-C-001", "JSON 형식 요청이 아닙니다."), //Article Controller Error1 : Request 인코딩 형식 오류
     REQUEST_FIELD_ERROR(HttpStatus.BAD_REQUEST, "A-C-002", "입력 필드에 오류가 있습니다."), //Article Controller Error2 : Request 필드 검증 실패
