@@ -2,10 +2,7 @@ package com.jscode.demoApp.error.advice;
 
 import com.jscode.demoApp.dto.response.ErrorResponseDto;
 import com.jscode.demoApp.error.ErrorCode;
-import com.jscode.demoApp.error.exception.AuthorizeException;
-import com.jscode.demoApp.error.exception.FieldBindingException;
-import com.jscode.demoApp.error.exception.MemberDuplicateException;
-import com.jscode.demoApp.error.exception.ResourceNotFoundException;
+import com.jscode.demoApp.error.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -143,6 +140,11 @@ public class GlobalAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDto);
     }
 
+    @ExceptionHandler(ResourceCreationException.class)
+    public ResponseEntity resourceCreateExHandler(ResourceCreationException ex){
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ex.getErrorCode(), ex.getResourceName());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDto);
+    }
 
 
 }
