@@ -24,6 +24,11 @@ public class UserPrincipal implements UserDetails {
     public static UserPrincipal fromDto(MemberDto memberDto){
         return UserPrincipal.of(memberDto.getId(), memberDto.getEmail(), memberDto.getPassword());
     }
+
+    public MemberDto toDto(){
+        return MemberDto.of(this.getId(), this.getUsername(), null, null);
+    }
+
     public Long getId(){return this.id;};
 
     @Override public Collection<? extends GrantedAuthority> getAuthorities() {return this.authorities;}
