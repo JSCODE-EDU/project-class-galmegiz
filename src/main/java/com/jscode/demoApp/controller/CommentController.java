@@ -27,7 +27,7 @@ public class CommentController {
        if(userPrincipal == null){
            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
        }
-       CommentDto createdComment = commentService.createComment(commentRequest.toDto(userPrincipal.getId()));
+       CommentDto createdComment = commentService.createComment(commentRequest.toDto(userPrincipal.toDto()));
        URI createdUrl = new URI("/comments/" + createdComment.getId());
        return ResponseEntity.created(createdUrl).body(createdComment);
    }

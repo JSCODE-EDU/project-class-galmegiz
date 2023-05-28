@@ -1,6 +1,7 @@
 package com.jscode.demoApp.dto.request;
 
 import com.jscode.demoApp.dto.CommentDto;
+import com.jscode.demoApp.dto.MemberDto;
 import com.jscode.demoApp.dto.UserPrincipal;
 import lombok.*;
 
@@ -13,7 +14,7 @@ public class CommentRequest {
     private String content;
     private Long articleId;
 
-    public CommentDto toDto(Long userId){
-        return CommentDto.of(this.title, this.content, this.articleId, userId);
+    public CommentDto toDto(MemberDto memberDto){
+        return CommentDto.of(this.title, this.content, articleId, memberDto);
     }
 }

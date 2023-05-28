@@ -17,17 +17,17 @@ public class CommentDto {
     private String title;
     private String content;
     private Long articleId;
-    private Long memberId;
+    private MemberDto memberDto;
 
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
 
-    public static CommentDto of(Long id, String title, String content, Long articleId, Long memberId, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new CommentDto(id, title, content, articleId, memberId, createdAt, modifiedAt);
+    public static CommentDto of(Long id, String title, String content, Long articleId, MemberDto memberDto, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new CommentDto(id, title, content, articleId, memberDto, createdAt, modifiedAt);
     }
-    public static CommentDto of(String title, String content, Long articleId, Long memberId) {
-        return new CommentDto(null, title, content, articleId, memberId, null, null);
+    public static CommentDto of(String title, String content, Long articleId, MemberDto memberDto) {
+        return new CommentDto(null, title, content, articleId, memberDto, null, null);
     }
 
     public static CommentDto fromEntity(Comment comment) {
@@ -35,7 +35,7 @@ public class CommentDto {
                 comment.getTitle(),
                 comment.getComment(),
                 comment.getArticle().getId(),
-                comment.getMember().getId(),
+                MemberDto.fromEntity(comment.getMember()),
                 comment.getCreatedAt(),
                 comment.getLastModifiedAt());
     }
