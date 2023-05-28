@@ -47,11 +47,16 @@ public class MemberController {
     */
 
     @GetMapping("/members/{id}")
-    public ResponseEntity getMemberInfo(@AuthenticationPrincipal UserPrincipal userPrincipal){
+    public ResponseEntity getMemberInfo(@PathVariable Long id, @AuthenticationPrincipal UserPrincipal userPrincipal){
         if(userPrincipal == null){
             log.info("{}", "error");
             throw new AuthorizeException(ErrorCode.JWT_TOKEN_ERROR);
         }
+
+        if(!userPrincipal.getId().equals(id)){
+            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS, "MEMBER_INFO");
+        }
+
         MemberInfoResponse response = MemberInfoResponse.fromDto(memberService.findMemberById(userPrincipal.getId()));
         return ResponseEntity.ok(response);
     }
