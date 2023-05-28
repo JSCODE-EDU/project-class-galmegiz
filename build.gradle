@@ -36,6 +36,11 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -52,7 +57,7 @@ ext {
 test {
 	useJUnitPlatform()
 	//systemProperty 'org.springframework.restdocs.outputDir', snippetsDir
-	//outputs.dir snippetsDir
+	outputs.dir snippetsDir
 }
 
 asciidoctor {
@@ -60,7 +65,7 @@ asciidoctor {
 		delete file("src/main/resources/static/docs")
 	}
 	dependsOn test
-	//inputs.dir snippetsDir
+	inputs.dir snippetsDir
 }
 
 /* 같은 코드
@@ -69,12 +74,13 @@ asciidoctor.doFirst {
 }
  */
 
+/*
 bootJar {
 	dependsOn asciidoctor
 	from asciidoctor.outputDir
 	into 'static/docs'
 }
-
+*/
 task copyDocument(type: Copy) {
 	dependsOn asciidoctor
 	from file("${asciidoctor.outputDir}")

@@ -496,10 +496,13 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 85
+Content-Length: 86
 
-{"id":3,"title":"제목","content":"내용","createdAt":"2023-05-23T01:20:11.497129"}</code></pre>
+{"id":3,"title":"제목","content":"내용","createdAt":"2023-05-24T11:28:18.4595138"}</code></pre>
 </div>
 </div>
 </div>
@@ -525,6 +528,9 @@ title=%EC%A0%9C%EB%AA%A9&amp;content=%EB%82%B4%EC%9A%A9</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Location: /articles/5
 Content-Type: text/plain;charset=UTF-8
 Content-Length: 35
@@ -556,10 +562,13 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 106
+Content-Length: 105
 
-{"id":2,"title":"수정된 제목","content":"수정된 내용","createdAt":"2023-05-23T01:20:11.4561296"}</code></pre>
+{"id":2,"title":"수정된 제목","content":"수정된 내용","createdAt":"2023-05-24T11:28:18.422514"}</code></pre>
 </div>
 </div>
 </div>
@@ -582,6 +591,9 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: text/plain;charset=UTF-8
 Content-Length: 35
 
@@ -608,10 +620,13 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 88
+Content-Length: 87
 
-[{"id":1,"title":"제목","content":"내용","createdAt":"2023-05-23T01:20:11.0331282"}]</code></pre>
+[{"id":1,"title":"제목","content":"내용","createdAt":"2023-05-24T11:28:18.132522"}]</code></pre>
 </div>
 </div>
 </div>
