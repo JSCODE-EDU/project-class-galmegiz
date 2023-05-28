@@ -5,6 +5,7 @@ import com.jscode.demoApp.jwt.JwtAuthenticationFilter;
 import com.jscode.demoApp.dto.UserPrincipal;
 import com.jscode.demoApp.error.exception.LoginFailException;
 import com.jscode.demoApp.jwt.JwtAuthorizationFilter;
+import com.jscode.demoApp.jwt.JwtErrorHandlingFilter;
 import com.jscode.demoApp.service.MemberService;
 import com.jscode.demoApp.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,9 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable()
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(authenticationManagerBuilder.getObject(), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider), JwtAuthenticationFilter.class)
+                .addFilterBefore(new JwtErrorHandlingFilter(), JwtAuthorizationFilter.class)
                 .authorizeRequests(request -> request.mvcMatchers("/members/**").permitAll());
 
         return http.build();

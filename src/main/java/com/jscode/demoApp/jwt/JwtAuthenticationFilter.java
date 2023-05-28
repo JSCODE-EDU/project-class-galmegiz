@@ -2,6 +2,10 @@ package com.jscode.demoApp.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jscode.demoApp.dto.UserPrincipal;
+import com.jscode.demoApp.dto.request.LoginRequest;
+import com.jscode.demoApp.error.ErrorCode;
+import com.jscode.demoApp.error.exception.FieldBindingException;
+import com.jscode.demoApp.error.exception.LoginFailException;
 import com.jscode.demoApp.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.validation.BindException;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -29,40 +34,31 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
 
 
-    //doFilter에서 requiresAuthentication requiresAuthenticationRequestMatcher(default /login)과 request가 일치하지 않으면
-    //attempAuthentication 수행하지 않고 doFilter로 넘어감
-//    @Override
-//    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-//            throws IOException, ServletException {
-//        String token = ((HttpServletRequest) request).getHeader("Authrorization");
-//        log.info(token);
-//
-//        if(token != null && jwtTokenProvider.validateToken(token)){
-//            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//            chain.doFilter(request, response);
-//        }else{
-//            ((AbstractAuthenticationProcessingFilter)this).doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
-//        }
-//    }
-
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+        super(authenticationManager);
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException{
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        log.info("login filter");
+
         if (!request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
+        LoginRequest loginRequest = null;
+        try {
+            loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
+            UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.getEmail(), loginRequest.getPassword());
+            return this.getAuthenticationManager().authenticate(authRequest);
+        } catch (IOException e) {
+            throw new IllegalArgumentException();
+        } catch (AuthenticationException e){
+            throw new LoginFailException();
+        }
 
-        String userName = request.getParameter("userName");
-        userName = (userName != null) ? userName.trim() : "";
-        String password = request.getParameter("password");
-        password = (password != null) ? password.trim() : "";
-        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(userName, password);
-        return this.getAuthenticationManager().authenticate(authRequest);
     }
 
     @Override
@@ -71,8 +67,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
         String jwtToken = jwtTokenProvider.createToken(authResult);
-        ObjectMapper objectMapper = new ObjectMapper();
-        response.addHeader(jwtTokenProvider.AUTHORIZATION_HEADER,"Bearer " + jwtToken);
+
+        response.addHeader(jwtTokenProvider.AUTHORIZATION_HEADER,JwtTokenProvider.HEADER_PREFIX + " " + jwtToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().println("로그인 성공");
