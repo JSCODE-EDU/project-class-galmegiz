@@ -16,10 +16,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 @RestControllerAdvice
 public class GlobalAdvice {
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity AccessDenyExHandler(AccessDeniedException ex){
+        System.out.println("================eroror============");
+        throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
+    }
+
     //@RequestBody에 text/html형식 데이터가 올 때
     /*HttpMessageConverter에서 throw하는 Exception이다보니 Custom Exception을 적용할 수 없다.
       그러다보니 위 메소드와 동일한 방식으로 처리 제한
@@ -48,7 +56,7 @@ public class GlobalAdvice {
                             .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
                             .add(e.getDefaultMessage()));
         }
-
+        ex.printStackTrace();
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
@@ -96,7 +104,7 @@ public class GlobalAdvice {
                             .add(e.getDefaultMessage()));
         }
 
-        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.REQUEST_FIELD_ERROR, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
@@ -110,6 +118,7 @@ public class GlobalAdvice {
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity globalExHandler(Throwable ex){
+        ex.printStackTrace();
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.SEVER_GLOBAL_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
@@ -133,4 +142,7 @@ public class GlobalAdvice {
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ex.getErrorCode());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDto);
     }
+
+
+
 }
