@@ -1,11 +1,11 @@
 package com.jscode.demoApp.controller;
 
-import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.controller.validator.SearchValidator;
 import com.jscode.demoApp.dto.UserPrincipal;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
-import com.jscode.demoApp.dto.response.ArticleResponseDto;
+import com.jscode.demoApp.dto.response.ArticleListResponseDto;
+import com.jscode.demoApp.dto.response.ArticleResponse;
 import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.AuthorizeException;
 import com.jscode.demoApp.error.exception.FieldBindingException;
@@ -13,21 +13,16 @@ import com.jscode.demoApp.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,17 +44,17 @@ public class ArticleController {
         if(bindingResult.hasErrors()){
             throw new FieldBindingException(ErrorCode.REQUEST_FIELD_ERROR, bindingResult);
         }
-        List<ArticleResponseDto> articleDtos = articleService.searchArticle(searchRequestDto)
+        List<ArticleListResponseDto> articleDtos = articleService.searchArticle(searchRequestDto)
                                                                 .stream()
-                                                                .map(ArticleResponseDto::fromDto)
+                                                                .map(ArticleListResponseDto::fromDto)
                                                                 .toList();
         return ResponseEntity.ok(articleDtos);
     }
 
     @GetMapping("/articles/{id}")
     public ResponseEntity getArticle(@PathVariable Long id){
-        ArticleResponseDto articleResponseDto = ArticleResponseDto.fromDto(articleService.getArticle(id));
-        return ResponseEntity.ok(articleResponseDto);
+        ArticleResponse articleResponse = ArticleResponse.fromDto(articleService.getArticle(id));
+        return ResponseEntity.ok(articleResponse);
     }
 /*
     @PostMapping("/articles/form")
@@ -77,7 +72,7 @@ public class ArticleController {
         if(userPrincipal == null){
             throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
         }
-        ArticleResponseDto newArticleResponseDto = ArticleResponseDto.fromDto(articleService.createArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
+        ArticleListResponseDto newArticleResponseDto = ArticleListResponseDto.fromDto(articleService.createArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
         URI createdUrl = new URI("/articles/" + newArticleResponseDto.getId());
         return ResponseEntity.created(createdUrl).body("게시글이 생성되었습니다.");
     }
@@ -87,7 +82,7 @@ public class ArticleController {
         if(userPrincipal == null){
             throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
         }
-        ArticleResponseDto updatedArticleDto = ArticleResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
+        ArticleListResponseDto updatedArticleDto = ArticleListResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
         return ResponseEntity.ok(updatedArticleDto);
     }
 

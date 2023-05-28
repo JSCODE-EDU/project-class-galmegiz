@@ -29,8 +29,8 @@ public class CommentService {
 
     public CommentDto createComment(CommentDto commentDto){
         Comment comment = null;
-        Optional<Article> article = articleRepository.findById(commentDto.getArticleId());
-        Optional<Member> member = memberRepository.findById(commentDto.getMemberId());
+        Optional<Article> article = articleRepository.findById(commentDto.getMemberDto().getId());
+        Optional<Member> member = memberRepository.findById(commentDto.getArticleId());
 
         //Spring JPA 쓰면 getRerefenceById를 이용해 repository 단에서 throw시킬 수도 있음
         if(article.isEmpty() || member.isEmpty()){

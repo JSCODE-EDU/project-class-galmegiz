@@ -1,5 +1,6 @@
 package com.jscode.demoApp.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.ToString;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -23,6 +26,12 @@ public class Article extends BaseEntity{
     @ManyToOne(optional = false)
     @JoinColumn(name = "member_id")
     Member member;
+
+    @JsonManagedReference
+    @ToString.Exclude
+    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Comment> comments = new ArrayList<>();
+
 
     @Builder
     public Article(String title, String content, Member member){

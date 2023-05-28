@@ -1,11 +1,14 @@
 package com.jscode.demoApp.repository;
 
+import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.domain.Comment;
 import com.jscode.demoApp.dto.CommentDto;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
+
 @Repository
 public class CommentRepositoryWithVanillaJpa implements CommentRepository{
 
@@ -16,6 +19,16 @@ public class CommentRepositoryWithVanillaJpa implements CommentRepository{
     public Comment save(Comment comment) {
         em.persist(comment);
         return comment;
+    }
+
+    @Override
+    public List<Comment> findAllByArticleId(Long articleId) {
+        return em.createQuery("SELECT c " +
+                "FROM Comment c " +
+                "WHERE c.id = :id " +
+                "ORDER BY c.createdAt", Comment.class)
+                .setParameter("id", articleId)
+                .getResultList();
     }
 
     @Override
