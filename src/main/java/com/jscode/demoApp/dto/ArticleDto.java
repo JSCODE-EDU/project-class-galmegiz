@@ -25,11 +25,15 @@ public class ArticleDto {
     private Member member;
     private List<CommentDto> commentDtos;
 
+    private List<LikeDto> likeDtos;
+
 
 
     public static ArticleDto of(Long id, String title, String content){
-        return new ArticleDto(id, title, content, null, null, null);
+        return new ArticleDto(id, title, content, null, null, null, null);
     }
+
+
 
 
     public static ArticleDto fromEntity(Article article){
@@ -39,6 +43,7 @@ public class ArticleDto {
                 ,article.getCreatedAt()
                 ,article.getMember()
                 ,article.getComments().stream().map(CommentDto::fromEntity).toList()
+                ,article.getLikes().stream().map(LikeDto::fromEntity).toList()
         );
     }
 
