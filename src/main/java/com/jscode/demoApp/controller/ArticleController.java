@@ -1,6 +1,7 @@
 package com.jscode.demoApp.controller;
 
 import com.jscode.demoApp.controller.validator.SearchValidator;
+import com.jscode.demoApp.dto.LikeDto;
 import com.jscode.demoApp.dto.UserPrincipal;
 import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
@@ -10,8 +11,10 @@ import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.AuthorizeException;
 import com.jscode.demoApp.error.exception.FieldBindingException;
 import com.jscode.demoApp.service.ArticleService;
+import com.jscode.demoApp.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -30,6 +33,7 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final LikeService likeService;
     private final SearchValidator searchValidator;
 
     @InitBinder("searchRequestDto")
@@ -70,7 +74,7 @@ public class ArticleController {
     @PostMapping("/articles/form")
     public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto, @AuthenticationPrincipal UserPrincipal userPrincipal) throws URISyntaxException {
         if(userPrincipal == null){
-            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
+            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS, "ARTICLE");
         }
         ArticleListResponseDto newArticleResponseDto = ArticleListResponseDto.fromDto(articleService.createArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
         URI createdUrl = new URI("/articles/" + newArticleResponseDto.getId());
@@ -80,7 +84,7 @@ public class ArticleController {
     @PutMapping("/articles/{id}")
     public ResponseEntity updateArticle(@RequestBody ArticleRequestDto articleRequestDto, @AuthenticationPrincipal UserPrincipal userPrincipal){
         if(userPrincipal == null){
-            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
+            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS, "ARTICLE");
         }
         ArticleListResponseDto updatedArticleDto = ArticleListResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
         return ResponseEntity.ok(updatedArticleDto);
@@ -89,12 +93,20 @@ public class ArticleController {
     @DeleteMapping("/articles/{id}")
     public ResponseEntity deleteArticle(@PathVariable Long id, @AuthenticationPrincipal UserPrincipal userPrincipal){
         if(userPrincipal == null){
-            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
+            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS, "ARTICLE");
         }
         articleService.deleteArticle(id, userPrincipal.getId());
         return ResponseEntity.ok("게시물이 삭제되었습니다.");
     }
 
+    @PostMapping("/articles/{id}/like")
+    public ResponseEntity likeArticle(@PathVariable Long id, @AuthenticationPrincipal UserPrincipal userPrincipal){
+        if(userPrincipal == null){
+            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS, "ARTICLE LIKE");
+        }
 
+        int result = likeService.like(LikeDto.of(id, userPrincipal.toDto()));
+        return ResponseEntity.status(HttpStatus.OK).body("좋아요 개수가 " + result + "되었습니다.");
+    }
 
 }
