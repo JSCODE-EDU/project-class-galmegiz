@@ -21,7 +21,7 @@ public class SearchValidator implements Validator {
         SearchRequestDto searchRequestDto = (SearchRequestDto) target;
         log.info("customvalidator : {}", searchRequestDto);
         if(searchRequestDto.getSearchType() != null){
-            if(searchRequestDto.getSearchKeyword().length() < 1){
+            if(searchRequestDto.getSearchKeyword() == null || searchRequestDto.getSearchKeyword().length() < 1){
                 errors.rejectValue("searchKeyword", "Size" ,"검색 키워드는 1글자 이상입니다.");
             }
         }

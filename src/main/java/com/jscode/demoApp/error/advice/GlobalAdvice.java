@@ -32,6 +32,7 @@ public class GlobalAdvice {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity messageNotReadableExHandler(HttpMessageNotReadableException ex){
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.REQUEST_FIELD_ERROR);
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
@@ -46,7 +47,7 @@ public class GlobalAdvice {
 
         Map<String, List<String>> messageDetail = new HashMap<>();
         BindingResult bindingResult = ex.getBindingResult();
-
+        ex.printStackTrace();
         if(bindingResult.hasErrors()){
             bindingResult.getFieldErrors()
                     .forEach(e -> messageDetail

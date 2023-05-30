@@ -47,6 +47,17 @@ public class ArticleDto {
         );
     }
 
+    public static ArticleDto fromEntities(Article article){
+        return new ArticleDto(article.getId()
+                ,article.getTitle()
+                ,article.getContent()
+                ,article.getCreatedAt()
+                ,article.getMember()
+                ,null
+                ,null
+        );
+    }
+
     public Article toEntity(){
         return Article.builder().title(this.title)
                 .content(this.content)
