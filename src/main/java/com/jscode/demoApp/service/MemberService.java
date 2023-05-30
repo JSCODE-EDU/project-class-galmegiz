@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,14 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final PasswordEncoder passwordEncoder;
     public MemberDto register(MemberDto memberDto) {
         memberRepository.findByEmail(memberDto.getEmail())
                 .ifPresent(member  -> {throw new MemberDuplicateException(member.getEmail());});
 
         Member member = Member.builder()
                                 .email(memberDto.getEmail())
-                                .password("{noop}" + memberDto.getPassword())
+                                .password(passwordEncoder.encode(memberDto.getPassword()))
                                 .build();
         return MemberDto.fromEntity(memberRepository.save(member));
     }
