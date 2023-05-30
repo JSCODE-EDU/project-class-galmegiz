@@ -27,11 +27,14 @@ public class Article extends BaseEntity{
     @JoinColumn(name = "member_id")
     Member member;
 
-    @JsonManagedReference
+
     @ToString.Exclude
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Comment> comments = new ArrayList<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<ArticleMemberLike> likes = new ArrayList<>();
 
     @Builder
     public Article(String title, String content, Member member){

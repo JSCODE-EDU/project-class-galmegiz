@@ -19,7 +19,9 @@ public class ArticleResponse {
     private String content;
     private String createdBy;
     private LocalDateTime createdAt;
+    private int likeCount;
     private List<CommentResponse> commentResponses;
+
 
 
 
@@ -30,6 +32,8 @@ public class ArticleResponse {
                 articleDto.getContent(),
                 articleDto.getMember().getEmail(),
                 articleDto.getCreatedAt(),
-                articleDto.getCommentDtos().stream().map(CommentResponse::fromDto).toList());
+                articleDto.getLikeDtos().size(),
+                articleDto.getCommentDtos().stream().map(CommentResponse::fromDto).toList()
+                );
     }
 }
