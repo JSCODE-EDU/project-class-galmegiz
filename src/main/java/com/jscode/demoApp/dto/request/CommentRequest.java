@@ -2,7 +2,6 @@ package com.jscode.demoApp.dto.request;
 
 import com.jscode.demoApp.dto.CommentDto;
 import com.jscode.demoApp.dto.MemberDto;
-import com.jscode.demoApp.dto.UserPrincipal;
 import lombok.*;
 
 @Getter

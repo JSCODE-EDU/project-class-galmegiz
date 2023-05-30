@@ -2,20 +2,16 @@ package com.jscode.demoApp.service;
 
 import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
-import com.jscode.demoApp.domain.Comment;
 import com.jscode.demoApp.domain.Member;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.dto.MemberDto;
-import com.jscode.demoApp.dto.UserPrincipal;
 import com.jscode.demoApp.dto.request.PageRequest;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
-import com.jscode.demoApp.dto.response.ErrorResponseDto;
 import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.AuthorizeException;
 import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
 import com.jscode.demoApp.repository.CommentRepository;
-import com.jscode.demoApp.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

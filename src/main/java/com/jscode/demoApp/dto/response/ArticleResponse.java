@@ -1,12 +1,9 @@
 package com.jscode.demoApp.dto.response;
 
 import com.jscode.demoApp.dto.ArticleDto;
-import com.jscode.demoApp.dto.CommentDto;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

@@ -2,7 +2,6 @@ package com.jscode.demoApp.repository;
 
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.request.PageRequest;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

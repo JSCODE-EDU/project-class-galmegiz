@@ -1,11 +1,9 @@
 package com.jscode.demoApp.dto;
 
 import com.jscode.demoApp.domain.Article;
-import com.jscode.demoApp.domain.Comment;
 import com.jscode.demoApp.domain.Member;
 import lombok.*;
 
-import javax.persistence.Access;
 import java.time.LocalDateTime;
 import java.util.List;
 

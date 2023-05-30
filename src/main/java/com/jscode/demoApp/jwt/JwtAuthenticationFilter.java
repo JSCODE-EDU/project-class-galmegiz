@@ -1,12 +1,8 @@
 package com.jscode.demoApp.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jscode.demoApp.dto.UserPrincipal;
 import com.jscode.demoApp.dto.request.LoginRequest;
-import com.jscode.demoApp.error.ErrorCode;
-import com.jscode.demoApp.error.exception.FieldBindingException;
 import com.jscode.demoApp.error.exception.LoginFailException;
-import com.jscode.demoApp.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -16,15 +12,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.validation.BindException;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

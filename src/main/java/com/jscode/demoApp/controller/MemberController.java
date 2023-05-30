@@ -2,17 +2,13 @@ package com.jscode.demoApp.controller;
 
 import com.jscode.demoApp.dto.MemberDto;
 import com.jscode.demoApp.dto.UserPrincipal;
-import com.jscode.demoApp.dto.request.LoginRequest;
 import com.jscode.demoApp.dto.request.MemberRegisterRequest;
 import com.jscode.demoApp.dto.response.MemberInfoResponse;
 import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.AuthorizeException;
 import com.jscode.demoApp.service.MemberService;
-import com.jscode.demoApp.jwt.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;

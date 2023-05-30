@@ -1,7 +1,6 @@
 package com.jscode.demoApp.dto;
 
 import com.jscode.demoApp.domain.Comment;
-import com.jscode.demoApp.domain.Member;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

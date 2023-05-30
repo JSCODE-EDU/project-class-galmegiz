@@ -1,11 +1,11 @@
 package com.jscode.demoApp.dto.request;
 
 import com.jscode.demoApp.dto.MemberDto;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @Getter
 @ToString
