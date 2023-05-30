@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,19 +27,24 @@ public class S3FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public URL fileUpload(MultipartFile multipartFile){
-        String fileName = makeFileName(multipartFile);
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
+    public List<URL> fileUpload(List<MultipartFile> multipartFiles){
+        List<URL> urlList = new ArrayList<>();
+        multipartFiles.forEach(multipartFile -> {
+            String fileName = makeFileName(multipartFile);
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(multipartFile.getContentType());
 
-        try(InputStream inputStream = multipartFile.getInputStream()){
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        
-        }catch(IOException e){
-            throw new ResourceCreationException(ErrorCode.FILE_UPLOAD_ERROR, "Img Upload Fail");
-        }
-        return amazonS3Client.getUrl(bucket, fileName);
+            try(InputStream inputStream = multipartFile.getInputStream()){
+                amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+
+            }catch(IOException e){
+                throw new ResourceCreationException(ErrorCode.FILE_UPLOAD_ERROR, "Img Upload Fail");
+            }
+            urlList.add(amazonS3Client.getUrl(bucket, fileName));
+        });
+
+        return urlList;
     }
 
     private String makeFileName(MultipartFile multipartFile){
