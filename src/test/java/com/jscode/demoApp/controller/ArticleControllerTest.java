@@ -1,16 +1,13 @@
 package com.jscode.demoApp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jscode.demoApp.constant.SearchType;
+import com.jscode.demoApp.config.SecurityConfig;
 import com.jscode.demoApp.controller.validator.SearchValidator;
-import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
-import com.jscode.demoApp.dto.request.ArticleRequestDto;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
-import com.jscode.demoApp.dto.response.ArticleResponseDto;
 import com.jscode.demoApp.error.ErrorCode;
-import com.jscode.demoApp.error.exception.FieldBindingException;
 import com.jscode.demoApp.error.exception.ResourceNotFoundException;
+import com.jscode.demoApp.jwt.JwtTokenProvider;
 import com.jscode.demoApp.service.ArticleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +15,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -25,10 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
 
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ArticleController.class)
-@Import(SearchValidator.class)
+@Import({SearchValidator.class})
+@AutoConfigureMockMvc(addFilters = false)
 public class ArticleControllerTest {
     @Autowired MockMvc mvc;
 
@@ -69,11 +66,12 @@ public class ArticleControllerTest {
     @DisplayName("[GET]게시글 Id 이용 조회 테스트(게시글 X)")
     public void getArticleFailTest() throws Exception {
 
-        given(articleService.getArticle(any(Long.class))).willThrow(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
+        given(articleService.getArticle(any(Long.class))).willThrow(new ResourceNotFoundException(ErrorCode.ARTICLE_NOT_FOUND));
 
         mvc.perform(get("/articles/100")
                         .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(ErrorCode.ARTICLE_NOT_FOUND.getCode()));
     }
 
     @Test
@@ -213,7 +211,7 @@ public class ArticleControllerTest {
     @DisplayName("[DELETE]게시물 삭제 테스트(게시글 X)")
     @Test
     public void deleteArticleFailTest() throws Exception{
-        willThrow(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND)).given(articleService).deleteArticle(any(Long.class));
+        willThrow(new ResourceNotFoundException(ErrorCode.ARTICLE_NOT_FOUND)).given(articleService).deleteArticle(any(Long.class));
 
         mvc.perform(delete("/articles/1"))
                 .andExpect(status().isNotFound());
@@ -247,7 +245,7 @@ public class ArticleControllerTest {
         param.put("content", "content");
 
 
-        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
+        given(articleService.updateArticle(any(ArticleDto.class))).willThrow(new ResourceNotFoundException(ErrorCode.ARTICLE_NOT_FOUND));
 
         mvc.perform(put("/articles/1")
                         .contentType(MediaType.APPLICATION_JSON)

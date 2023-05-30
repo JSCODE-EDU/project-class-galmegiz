@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 public class ArticleRequestDto {
+    @Setter
     private Long id;
     @NotBlank(message = "제목은 필수 입력값입니다.")
     @Size(max = 15, message = "제목은 15자를 넘을 수 없습니다.")

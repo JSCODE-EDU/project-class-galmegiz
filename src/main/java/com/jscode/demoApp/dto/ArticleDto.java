@@ -1,13 +1,18 @@
 package com.jscode.demoApp.dto;
 
 import com.jscode.demoApp.domain.Article;
+import com.jscode.demoApp.domain.Comment;
+import com.jscode.demoApp.domain.Member;
 import lombok.*;
 
+import javax.persistence.Access;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ArticleDto {
     private Long id;
     @Setter
@@ -17,26 +22,45 @@ public class ArticleDto {
 
     private LocalDateTime createdAt;
 
-    //test용 생성자
-    public ArticleDto(Long id, String title, String content){
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
+    private Member member;
+    private List<CommentDto> commentDtos;
 
-    private ArticleDto(Long id, String title, String content, LocalDateTime createdAt){
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.createdAt = createdAt;
-    }
+    private List<LikeDto> likeDtos;
+
+
 
     public static ArticleDto of(Long id, String title, String content){
-        return new ArticleDto(id, title, content);
+        return new ArticleDto(id, title, content, null, null, null, null);
     }
+
+
 
 
     public static ArticleDto fromEntity(Article article){
-        return new ArticleDto(article.getId(), article.getTitle(), article.getContent(), article.getCreatedAt());
+        return new ArticleDto(article.getId()
+                ,article.getTitle()
+                ,article.getContent()
+                ,article.getCreatedAt()
+                ,article.getMember()
+                ,article.getComments().stream().map(CommentDto::fromEntity).toList()
+                ,article.getLikes().stream().map(LikeDto::fromEntity).toList()
+        );
+    }
+
+    public static ArticleDto fromEntities(Article article){
+        return new ArticleDto(article.getId()
+                ,article.getTitle()
+                ,article.getContent()
+                ,article.getCreatedAt()
+                ,article.getMember()
+                ,null
+                ,null
+        );
+    }
+
+    public Article toEntity(){
+        return Article.builder().title(this.title)
+                .content(this.content)
+                .build();
     }
 }

@@ -18,7 +18,7 @@ public class ErrorResponseDto {
     }
 
     public static ErrorResponseDto of(ErrorCode errorCode){
-        return new ErrorResponseDto(errorCode.getCode(), errorCode.getMessage(), null);
+        return ErrorResponseDto.of(errorCode, null);
     }
 
     public static ErrorResponseDto of(ErrorCode errorCode, Object messageDetail){
