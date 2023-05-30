@@ -1,6 +1,7 @@
 package com.jscode.demoApp.repository;
 
 import com.jscode.demoApp.domain.Article;
+import com.jscode.demoApp.dto.request.PageRequest;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
@@ -23,10 +24,10 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
     }
 
     @Override
-    public List<Article> findAll() {
-        return em.createQuery("SELECT a FROM Article a order by a.createdAt desc", Article.class)
-                .setFirstResult(0)
-                .setMaxResults(100)
+    public List<Article> findAll(PageRequest pageRequest) {
+        return em.createQuery("SELECT a FROM Article a JOIN FETCH a.member order by a.createdAt desc", Article.class)
+                .setFirstResult(pageRequest.page())
+                .setMaxResults(pageRequest.size() * 100)
                     .getResultList();
     }
 
@@ -35,12 +36,14 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
         return Optional.ofNullable(em.find(Article.class, id));
     }
     @Override
-    public List<Article> findByTitle(String title){
+    public List<Article> findByTitle(String title, PageRequest pageRequest){
         return em.createQuery("SELECT a " +
                 "from Article a " +
                 "where a.title = :title " +
                 "order by a.createdAt desc", Article.class)
                 .setParameter("title", title)
+                .setFirstResult(pageRequest.page())
+                .setMaxResults(pageRequest.size())
                 .getResultList();
     }
 

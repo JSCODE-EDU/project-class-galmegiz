@@ -7,6 +7,7 @@ import com.jscode.demoApp.domain.Member;
 import com.jscode.demoApp.dto.ArticleDto;
 import com.jscode.demoApp.dto.MemberDto;
 import com.jscode.demoApp.dto.UserPrincipal;
+import com.jscode.demoApp.dto.request.PageRequest;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ErrorResponseDto;
 import com.jscode.demoApp.error.ErrorCode;
@@ -44,23 +45,25 @@ public class ArticleService {
         return ArticleDto.fromEntity(article);
     }
 
-    public List<ArticleDto> searchArticle(SearchRequestDto searchRequestDto){
+    public List<ArticleDto> searchArticle(SearchRequestDto searchRequestDto, PageRequest pageRequest){
         List<Article> articles = new ArrayList<>();
 
         if(searchRequestDto.getSearchType() == null){
-            articles = articleRepository.findAll();
+            articles = articleRepository.findAll(pageRequest);
         }else if(searchRequestDto.getSearchType() == SearchType.TITLE){
-            articles = articleRepository.findByTitle(searchRequestDto.getSearchKeyword());
+            articles = articleRepository.findByTitle(searchRequestDto.getSearchKeyword(), pageRequest);
         }else{ //ToDo : 향후 구현
-            articles = articleRepository.findAll();
+            articles = articleRepository.findAll(pageRequest);
         }
-
-        return articles.stream().map(ArticleDto::fromEntity).toList();
+        System.out.println("=============after sql=============");
+        //현재 상태에서는 select article 이후 dto 변환 과정에서 member와 like에 대한 추가 select 쿼리를 각 2번 실행한다.
+        //쿼리 최적화를 하려면 fetch join을 하든지 dto를 수정해줘야할 듯 하다.
+        return articles.stream().map(ArticleDto::fromEntities).toList();
     }
     //getArticles를 빼는 게 나을까?
-    public List<ArticleDto> getAllArticles(){
-        List<Article> articles = articleRepository.findAll();
-        return articles.stream().map(ArticleDto::fromEntity).toList();
+    public List<ArticleDto> getAllArticles(PageRequest pageRequest){
+        List<Article> articles = articleRepository.findAll(pageRequest);
+        return articles.stream().map(ArticleDto::fromEntities).toList();
     }
 
     public ArticleDto createArticle(ArticleDto articleDto, Long userId){ //메소드명은 save로 통일하는 게 좋은가?
