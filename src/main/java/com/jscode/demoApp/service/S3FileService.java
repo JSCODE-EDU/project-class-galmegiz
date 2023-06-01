@@ -1,5 +1,6 @@
 package com.jscode.demoApp.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3FileService {
 
-    private final AmazonS3Client amazonS3Client;
+    private final AmazonS3 amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
