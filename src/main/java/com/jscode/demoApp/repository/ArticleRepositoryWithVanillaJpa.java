@@ -2,13 +2,10 @@ package com.jscode.demoApp.repository;
 
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.request.PageRequest;
-import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

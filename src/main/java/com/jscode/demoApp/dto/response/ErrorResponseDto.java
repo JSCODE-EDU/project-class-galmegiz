@@ -1,7 +1,9 @@
 package com.jscode.demoApp.dto.response;
 
 import com.jscode.demoApp.error.ErrorCode;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @ToString
 @NoArgsConstructor

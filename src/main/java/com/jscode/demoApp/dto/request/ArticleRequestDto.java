@@ -1,6 +1,5 @@
 package com.jscode.demoApp.dto.request;
 
-import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

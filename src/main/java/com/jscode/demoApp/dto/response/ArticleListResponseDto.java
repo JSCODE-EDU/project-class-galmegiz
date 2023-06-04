@@ -1,11 +1,9 @@
 package com.jscode.demoApp.dto.response;
 
-import com.jscode.demoApp.domain.Comment;
 import com.jscode.demoApp.dto.ArticleDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

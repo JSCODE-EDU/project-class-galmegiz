@@ -6,7 +6,6 @@ import com.jscode.demoApp.domain.Member;
 import com.jscode.demoApp.dto.CommentDto;
 import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.ResourceCreationException;
-import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
 import com.jscode.demoApp.repository.CommentRepository;
 import com.jscode.demoApp.repository.MemberRepository;

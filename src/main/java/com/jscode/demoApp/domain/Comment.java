@@ -1,6 +1,5 @@
 package com.jscode.demoApp.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

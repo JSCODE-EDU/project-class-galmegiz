@@ -14,8 +14,10 @@ public enum ErrorCode {
     Member_Duplicate_Error(HttpStatus.BAD_REQUEST, "M-S-001", "중복된 사용자입니다."), //Member Service Error1 : 중복된 사용자 생성
     Login_Fail(HttpStatus.BAD_REQUEST, "M-S-002", "아이디가 없거나 패스워드가 일치하지 않습니다."), //Member Service Error2 : 로그인 실패
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M-S-003", "회원 정보가 존재하지 않습니다."), //Member Service Error3 : 회원id에 해당하는 정보가 존재하지 않음
-    JWT_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "M-C-001", "인증 정보에 오류가 있습니다."),
+    JWT_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "M-C-001", "인증 정보에 오류가 있습니다."), //Member Controller Error1 : Jwt token 오류
+    FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "F-S-001", "파일 생성 중 오류가 발생했습니다."), //File Service Error1 : 이미지 생성 작업 중 오류 발생
     COMMENT_CREATE_ERROR(HttpStatus.BAD_REQUEST, "C-S-001", "댓글 작성에 실패하였습니다."); //Article Service Error1 : 댓글 생성에 필요한 정보가 부족함
+
 
     private HttpStatus status;
     private String code;

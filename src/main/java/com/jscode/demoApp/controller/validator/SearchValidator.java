@@ -1,6 +1,5 @@
 package com.jscode.demoApp.controller.validator;
 
-import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

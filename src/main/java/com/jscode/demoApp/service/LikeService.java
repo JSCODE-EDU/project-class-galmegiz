@@ -2,7 +2,9 @@ package com.jscode.demoApp.service;
 
 import com.jscode.demoApp.domain.ArticleMemberLike;
 import com.jscode.demoApp.dto.LikeDto;
-import com.jscode.demoApp.repository.*;
+import com.jscode.demoApp.repository.ArticleRepositoryWithSpring;
+import com.jscode.demoApp.repository.LikeRepository;
+import com.jscode.demoApp.repository.MemberRepositoryWithSpring;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

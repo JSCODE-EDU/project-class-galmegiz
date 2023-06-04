@@ -1,7 +1,6 @@
 package com.jscode.demoApp.error.exception;
 
 import com.jscode.demoApp.error.ErrorCode;
-import org.springframework.validation.BindingResult;
 
 public class MemberDuplicateException extends CustomErrorException{
     private final String duplicatedEmail;
