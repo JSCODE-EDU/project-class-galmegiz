@@ -3,6 +3,18 @@
 * Session기반 인증/인가 구조를 개선하기 위해 JWT 인증/인가 기능을 추가한 게시판 API서버입니다.
 <br>
 
+# ⚙️세부 기술스택
+ * Spring FrameWork
+   * Spring Web 2.7.11 
+   * Spring Data Jpa 2.7.11 
+   * Spring Security 2.7.11 
+   * Spring RestDocs 2.0.7
+* MySql 8 
+* Junit5
+* Mockito
+* AWS(EC2, S3)
+<br>
+
 # 👉주요 기능
  * [핵심구현 요소] <span style="color:red">**Spring Security + JWT 기반 사용자 인증/인가 제한**</span>
     * Spring Security 기본 제공 세션기반 인증/인가 매커니즘 비활성화 및 JWT 인증/인가 필터 등록
@@ -24,14 +36,6 @@
 
 <br>
 
-# ⚙️세부 기술스택
- * Spring FrameWork
-   * Spring Web
-   * Spring Data Jpa
-   * Spring Security
-   * Spring RestDocs
-* MySql
-* Junit5
-* AWS(EC2, S3)
+
 
 
