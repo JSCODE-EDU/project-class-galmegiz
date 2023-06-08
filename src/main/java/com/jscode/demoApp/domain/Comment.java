@@ -34,10 +34,12 @@ public class Comment extends BaseEntity {
         this.comment = comment;
         this.member = member;
         this.article = article;
+        this.article.getComments().add(this);
     }
 
     public void update(String title, String comment) {
         this.title = title;
         this.comment = comment;
     }
+
 }
