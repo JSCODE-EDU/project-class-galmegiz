@@ -48,4 +48,11 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
     public void delete(Article article) {
         em.remove(article);
     }
+
+    @Override
+    public Long getCount() {
+        return em.createQuery("SELECT COUNT(a) " +
+                "from Article a ", Long.class)
+                .getSingleResult();
+    }
 }
