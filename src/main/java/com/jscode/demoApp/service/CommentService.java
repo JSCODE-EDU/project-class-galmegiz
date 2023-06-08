@@ -5,7 +5,9 @@ import com.jscode.demoApp.domain.Comment;
 import com.jscode.demoApp.domain.Member;
 import com.jscode.demoApp.dto.CommentDto;
 import com.jscode.demoApp.error.ErrorCode;
+import com.jscode.demoApp.error.exception.AuthorizeException;
 import com.jscode.demoApp.error.exception.ResourceCreationException;
+import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
 import com.jscode.demoApp.repository.CommentRepository;
 import com.jscode.demoApp.repository.MemberRepository;
@@ -28,8 +30,8 @@ public class CommentService {
 
     public CommentDto createComment(CommentDto commentDto){
         Comment comment = null;
-        Optional<Article> article = articleRepository.findById(commentDto.getMemberDto().getId());
-        Optional<Member> member = memberRepository.findById(commentDto.getArticleId());
+        Optional<Article> article = articleRepository.findById(commentDto.getArticleId());
+        Optional<Member> member = memberRepository.findById(commentDto.getMemberDto().getId());
 
         //Spring JPA 쓰면 getRerefenceById를 이용해 repository 단에서 throw시킬 수도 있음
         if(article.isEmpty() || member.isEmpty()){
@@ -46,5 +48,29 @@ public class CommentService {
         commentRepository.save(comment);
 
         return CommentDto.fromEntity(comment);
+    }
+
+    public void deleteComment(Long commentId, Long userId){
+        Comment comment = requestAuthorizeCheck(commentId, userId);
+        commentRepository.delete(comment);
+    }
+
+    public CommentDto updateComment(CommentDto commentDto){
+        Comment comment = requestAuthorizeCheck(commentDto.getId(), commentDto.getMemberDto().getId());
+        comment.update(commentDto.getTitle(), commentDto.getContent());
+        return CommentDto.fromEntity(comment);
+    }
+
+    private Comment requestAuthorizeCheck(Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> {
+                    throw new ResourceNotFoundException(ErrorCode.COMMENT_NOT_FOUND);
+                });
+
+        if(comment.getMember().getId() != userId){
+            throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
+        }
+
+        return comment;
     }
 }

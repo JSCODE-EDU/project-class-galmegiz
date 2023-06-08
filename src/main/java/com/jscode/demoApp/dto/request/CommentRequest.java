@@ -9,11 +9,12 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 public class CommentRequest {
+    private Long id;
     private String title;
     private String content;
     private Long articleId;
 
     public CommentDto toDto(MemberDto memberDto){
-        return CommentDto.of(this.title, this.content, articleId, memberDto);
+        return CommentDto.of(this.id, this.title, this.content, articleId, memberDto, null, null);
     }
 }
