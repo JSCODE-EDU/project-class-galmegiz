@@ -1,30 +1,31 @@
 package com.jscode.demoApp.service;
 
+import com.jscode.demoApp.config.SecurityConfig;
 import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.ArticleDto;
+import com.jscode.demoApp.dto.request.PageRequest;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
+import com.jscode.demoApp.repository.TestJpaConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
 
+
+@ActiveProfiles("test")
+@Import({TestJpaConfig.class})
+@EnableAutoConfiguration(exclude = SecurityConfig.class)
 @SpringBootTest
-@Transactional
 public class ArticleServiceIETest {
 
 
@@ -42,7 +43,7 @@ public class ArticleServiceIETest {
                     .title(title)
                     .content(content)
                     .build();
-            articleService.createArticle(ArticleDto.fromEntity(article));
+            articleService.createArticle(ArticleDto.of(null, "제목", "내용"), 1L);
         }
     }
 
@@ -56,7 +57,7 @@ public class ArticleServiceIETest {
                 .title(title)
                 .content(content)
                 .build();
-        ArticleDto newArticle = articleService.createArticle(ArticleDto.fromEntity(article));
+        ArticleDto newArticle = articleService.createArticle(ArticleDto.fromEntity(article), 1L);
         System.out.println("newArticle = " + newArticle.getId());
         ArticleDto findArticle = articleService.getArticle(newArticle.getId());
         Assertions.assertThat(findArticle.getTitle()).isEqualTo(title);
@@ -74,7 +75,7 @@ public class ArticleServiceIETest {
     @Test
     public void getAllArticleTest(){
         saveArticles();
-        List<ArticleDto> articles = articleService.getAllArticles();
+        List<ArticleDto> articles = articleService.getAllArticles(new PageRequest(1, 100));
         articles.stream().forEach(System.out::println);
         Assertions.assertThat(articles.size()).isEqualTo(10);
     }
@@ -85,13 +86,13 @@ public class ArticleServiceIETest {
         saveArticles();
         String title = "제목 수정 전";
         String content = "내용 수정 전";
-        ArticleDto articleDto = new ArticleDto(null, title, content);
-        ArticleDto newArticle = articleService.createArticle(articleDto);
+        ArticleDto articleDto = ArticleDto.of(null, title, content);
+        ArticleDto newArticle = articleService.createArticle(articleDto, 1L);
         Long id = newArticle.getId();
 
 
-        articleService.deleteArticle(id);
-        List<ArticleDto> articles = articleService.getAllArticles();
+        articleService.deleteArticle(id, 1L);
+        List<ArticleDto> articles = articleService.getAllArticles(new PageRequest(1, 100));
         Assertions.assertThat(articles.size()).isEqualTo(10);
     }
 
@@ -101,13 +102,13 @@ public class ArticleServiceIETest {
     public void updateArticleTest(){
         String title = "제목 수정 전";
         String content = "내용 수정 전";
-        ArticleDto articleDto = new ArticleDto(null, title, content);
-        ArticleDto newArticle = articleService.createArticle(articleDto);
+        ArticleDto articleDto = ArticleDto.of(null, title, content);
+        ArticleDto newArticle = articleService.createArticle(articleDto, 1L);
         Long id = newArticle.getId();
 
 
-        ArticleDto updatedArticleDto = new ArticleDto(id, "제목 수정 후", "내용 수정 후");
-        ArticleDto result = articleService.updateArticle(updatedArticleDto);
+        ArticleDto updatedArticleDto = ArticleDto.of(id, "제목 수정 후", "내용 수정 후");
+        ArticleDto result = articleService.updateArticle(updatedArticleDto, 1L);
         System.out.println("result.getTitle() = " + result.getTitle());
         Assertions.assertThat(articleService.getArticle(id).getTitle()).isEqualTo(result.getTitle());
 
@@ -119,10 +120,10 @@ public class ArticleServiceIETest {
         String title = "찾을 제목";
         String content = "내용 무";
 
-        IntStream.range(0, 5).forEach(i -> articleService.createArticle(new ArticleDto(null, title, content)));
+        IntStream.range(0, 5).forEach(i -> articleService.createArticle(ArticleDto.of(null, title, content), 1L));
 
 
-        List<ArticleDto> articles = articleService.searchArticle(new SearchRequestDto(SearchType.TITLE, title));
+        List<ArticleDto> articles = articleService.searchArticle(new SearchRequestDto(SearchType.TITLE, title), new PageRequest(1, 100));
         Assertions.assertThat(articles.size()).isEqualTo(5);
 
     }
