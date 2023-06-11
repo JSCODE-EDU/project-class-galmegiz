@@ -12,5 +12,6 @@ public interface ArticleRepository {
     public Optional<Article> findById(Long id);
     public List<Article> findByTitle(String title, PageRequest pageRequest);
     public void delete(Article article);
+    public Long getCount();
 
 }

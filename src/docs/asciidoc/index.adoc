@@ -3,61 +3,210 @@ ifndef::snippets[]
 endif::[]
 
 = Spring REST Docs
+:doctype: book
 :toc: left
 :toclevels: 2
 :sectlinks:
+:sectnums:
+:source-highlighter: highlightjs
+:docinfo: shared-head
 
 [[GET-getArticle]]
-== GET 게시글 조회
+== [조회] 게시글 조회
+
+=== [성공] 게시글 조회
 
 ==== HTTP request
 
-include::{snippets}/GET-getArticle/http-request.adoc[]
+include::{snippets}/getArticle/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/getArticle/response-fields.adoc[]
+include::{snippets}/getArticle/http-response.adoc[]
+
+=== [실패] 게시글 조회 실패(게시글 없음)
+
+==== HTTP request
+
+include::{snippets}/getArticleFail(NoArticle)/http-request.adoc[]
 
 ==== HTTP response
 
-include::{snippets}/GET-getArticle/http-response.adoc[]
+include::{snippets}/getArticleFail(NoArticle)/response-fields.adoc[]
+include::{snippets}/getArticleFail(NoArticle)//http-response.adoc[]
+
 
 [[POST-createArticle]]
-== POST 게시글 생성
+== [생성] 게시글 작성
+
+=== [성공] 게시글 작성
 
 ==== HTTP request
-
-include::{snippets}/POST-createArticle/http-request.adoc[]
+헤더
+include::{snippets}/postArticle/request-headers.adoc[]
+파라미터
+include::{snippets}/postArticle/request-parameters.adoc[]
+include::{snippets}/postArticle/http-request.adoc[]
 
 ==== HTTP response
 
-include::{snippets}/POST-createArticle//http-response.adoc[]
+include::{snippets}/postArticle//http-response.adoc[]
+
+=== [실패] 게시글 작성 실패(미인증)
+
+==== HTTP request
+
+include::{snippets}/postArticleFail(NoAuth)/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/postArticleFail(NoAuth)//response-fields.adoc[]
+include::{snippets}/postArticleFail(NoAuth)//http-response.adoc[]
 
 [[PUT-updateArticle]]
-== PUT 게시글 생성
+== [수정] 게시글 수정
+
+=== [성공] 게시글 수정
 
 ==== HTTP request
+헤더
+include::{snippets}/updateArticle/request-headers.adoc[]
+파라미터
+include::{snippets}/updateArticle/request-fields.adoc[]
 
-include::{snippets}/PUT-updateArticle/http-request.adoc[]
+include::{snippets}/updateArticle/http-request.adoc[]
 
 ==== HTTP response
 
-include::{snippets}/PUT-updateArticle//http-response.adoc[]
+include::{snippets}/updateArticle/response-fields.adoc[]
+
+include::{snippets}/updateArticle//http-response.adoc[]
+
+=== [실패] PUT 게시글 수정 실패(게시글 없음)
+
+==== HTTP request
+
+include::{snippets}/updateArticle(NoArticle)/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/updateArticle(NoArticle)//response-fields.adoc[]
+include::{snippets}/updateArticle(NoArticle)//http-response.adoc[]
+
+=== [실패] PUT 게시글 수정 실패(사용자 미인증)
+
+==== HTTP request
+
+include::{snippets}/updateArticle(NoAuth)/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/updateArticle(NoAuth)//response-fields.adoc[]
+include::{snippets}/updateArticle(NoAuth)//http-response.adoc[]
+
+=== [실패] PUT 게시글 수정 실패(댓글 권한 없음)
+
+==== HTTP request
+
+include::{snippets}/updateArticle(NoAuthToComment)/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/updateArticle(NoAuthToComment)//response-fields.adoc[]
+include::{snippets}/updateArticle(NoAuthToComment)//http-response.adoc[]
+
 
 [[DELETE-deleteArticle]]
-== DELTE 게시글 삭제
+== [삭제] 게시글 삭제
+
+=== [성공] 게시글 삭제
 
 ==== HTTP request
+헤더
+include::{snippets}/deleteArticle/request-headers.adoc[]
 
-include::{snippets}/DELETE-deleteArticle/http-request.adoc[]
+파라미터
+
+include::{snippets}/deleteArticle/path-parameters.adoc[]
+include::{snippets}/deleteArticle/http-request.adoc[]
 
 ==== HTTP response
 
-include::{snippets}/DELETE-deleteArticle/http-response.adoc[]
+include::{snippets}/deleteArticle/http-response.adoc[]
+
+=== [실패] 게시글 삭제 실패(사용자 미인증)
+
+==== HTTP request
+
+include::{snippets}/deleteArticleFail(NoAuth)/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/deleteArticleFail(NoAuth)/response-fields.adoc[]
+include::{snippets}/deleteArticleFail(NoAuth)/http-response.adoc[]
+
+=== [실패] 게시글 삭제 실패(댓글 권한 없음)
+
+==== HTTP request
+
+include::{snippets}/deleteArticle(NoAuthToComment)/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/deleteArticle(NoAuthToComment)/response-fields.adoc[]
+include::{snippets}/deleteArticle(NoAuthToComment)/http-response.adoc[]
 
 [[GET-SearchArticle]]
-== GET 게시글 검색
+== [검색] 게시글 검색
+
+=== [성공] 게시글 검색
 
 ==== HTTP request
 
-include::{snippets}/GET-searchArticle/http-request.adoc[]
+include::{snippets}/searchArticle/request-parameters.adoc[]
+include::{snippets}/searchArticle/http-request.adoc[]
 
 ==== HTTP response
 
-include::{snippets}/GET-searchArticle/http-response.adoc[]
+include::{snippets}/searchArticle/response-fields.adoc[]
+include::{snippets}/searchArticle/http-response.adoc[]
+
+=== [성공] 게시글 검색(키워드 없음)
+
+==== HTTP request
+
+include::{snippets}/searchArticle(NoKeyword)/http-request.adoc[]
+
+==== HTTP response
+
+검색 키워드 없을 경우 전체 게시물 반환(기본 100개)
+include::{snippets}/searchArticle(NoKeyword)/http-response.adoc[]
+
+[[GET-LikeArticle]]
+== [좋아요] 게시글 좋아요
+
+=== [좋아요 +1] 게시글 좋아요
+
+==== HTTP request
+
+헤더
+include::{snippets}/articleLike/request-headers.adoc[]
+
+파라미터
+include::{snippets}/articleLike/path-parameters.adoc[]
+include::{snippets}/articleLike/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/articleLike/http-response.adoc[]
+
+=== [좋아요 - 1] 게시글 좋아요 취소
+
+==== HTTP request
+
+헤더
+include::{snippets}/articleDislike/request-headers.adoc[]
+
+파라미터
+include::{snippets}/articleDislike/path-parameters.adoc[]
+
+include::{snippets}/articleDislike/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/articleDislike/http-response.adoc[]

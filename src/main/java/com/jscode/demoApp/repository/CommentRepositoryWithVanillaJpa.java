@@ -29,7 +29,7 @@ public class CommentRepositoryWithVanillaJpa implements CommentRepository{
     public List<Comment> findAllByArticleId(Long articleId) {
         return em.createQuery("SELECT c " +
                 "FROM Comment c " +
-                "WHERE c.id = :id " +
+                "WHERE c.article.id = :id " +
                 "ORDER BY c.createdAt", Comment.class)
                 .setParameter("id", articleId)
                 .getResultList();

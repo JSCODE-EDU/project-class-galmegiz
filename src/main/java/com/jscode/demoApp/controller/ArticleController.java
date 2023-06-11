@@ -8,6 +8,7 @@ import com.jscode.demoApp.dto.request.PageRequest;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.dto.response.ArticleListResponseDto;
 import com.jscode.demoApp.dto.response.ArticleResponse;
+import com.jscode.demoApp.dto.response.ArticleUpdateResponse;
 import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.AuthorizeException;
 import com.jscode.demoApp.error.exception.FieldBindingException;
@@ -91,7 +92,7 @@ public class ArticleController {
         if(userPrincipal == null){
             throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS, "ARTICLE");
         }
-        ArticleListResponseDto updatedArticleDto = ArticleListResponseDto.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
+        ArticleUpdateResponse updatedArticleDto = ArticleUpdateResponse.fromDto(articleService.updateArticle(articleRequestDto.toArticleDto(), userPrincipal.getId()));
         return ResponseEntity.ok(updatedArticleDto);
     }
 

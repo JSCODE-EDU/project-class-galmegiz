@@ -4,7 +4,6 @@ import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.domain.Member;
 import com.jscode.demoApp.dto.ArticleDto;
-import com.jscode.demoApp.dto.MemberDto;
 import com.jscode.demoApp.dto.request.PageRequest;
 import com.jscode.demoApp.dto.request.SearchRequestDto;
 import com.jscode.demoApp.error.ErrorCode;
@@ -13,6 +12,7 @@ import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
 import com.jscode.demoApp.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional //레포지토리에 태그다는 건 안 되는가?
 public class ArticleService {
 
@@ -51,7 +52,8 @@ public class ArticleService {
         }else{ //ToDo : 향후 구현
             articles = articleRepository.findAll(pageRequest);
         }
-        System.out.println("=============after sql=============");
+        log.info("========after sql=========");
+
         //현재 상태에서는 select article 이후 dto 변환 과정에서 member와 like에 대한 추가 select 쿼리를 각 2번 실행한다.
         //쿼리 최적화를 하려면 fetch join을 하든지 dto를 수정해줘야할 듯 하다.
         return articles.stream().map(ArticleDto::fromEntities).toList();
@@ -84,18 +86,16 @@ public class ArticleService {
     public ArticleDto updateArticle(ArticleDto articleDto, Long userId){
         Article article = requestAuthorizeCheck(articleDto.getId(), userId);
         article.update(articleDto.getTitle(), articleDto.getContent());
-        return ArticleDto.fromEntity(article);
+        return ArticleDto.fromEntities(article);
     }
 
     private Article requestAuthorizeCheck(Long articleId, Long userId){
-        MemberDto memberDto = memberService.findMemberById(userId);
-
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> {
                     throw new ResourceNotFoundException(ErrorCode.ARTICLE_NOT_FOUND);
                 });
 
-        if(article.getMember().getId() != memberDto.getId()){
+        if(article.getMember().getId() != userId){
             throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
         }
 
