@@ -40,7 +40,7 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
                 "order by a.createdAt desc", Article.class)
                 .setParameter("title", title)
                 .setFirstResult(pageRequest.page())
-                .setMaxResults(pageRequest.size())
+                .setMaxResults(pageRequest.size() * 100)
                 .getResultList();
     }
 

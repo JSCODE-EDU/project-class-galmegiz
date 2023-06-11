@@ -86,7 +86,7 @@ public class ArticleService {
     public ArticleDto updateArticle(ArticleDto articleDto, Long userId){
         Article article = requestAuthorizeCheck(articleDto.getId(), userId);
         article.update(articleDto.getTitle(), articleDto.getContent());
-        return ArticleDto.fromEntity(article);
+        return ArticleDto.fromEntities(article);
     }
 
     private Article requestAuthorizeCheck(Long articleId, Long userId){

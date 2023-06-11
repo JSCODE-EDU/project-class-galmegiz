@@ -9,9 +9,7 @@ import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.jwt.JwtTokenProvider;
 import com.jscode.demoApp.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +33,14 @@ public class MemberService {
                                 .build();
         return MemberDto.fromEntity(memberRepository.save(member));
     }
-
+/* login은 Spring security에서 담당
     public String login(MemberDto memberDto){
         //다 exception처리를 하는 게 맞을까? false return해서 사용자 응답만 보내주게 하는 방법은? 익셉션이 너무 늘어나고 있다.
         UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(memberDto.getEmail(), memberDto.getPassword());
         Authentication authResult = authenticationManagerBuilder.getObject().authenticate(authRequest);
         return tokenProvider.createToken(authResult);
     }
-
+*/
     public MemberDto findMemberByEmail(String email){
         return memberRepository.findByEmail(email).map(MemberDto::fromEntity)
                 .orElseThrow(LoginFailException::new);
