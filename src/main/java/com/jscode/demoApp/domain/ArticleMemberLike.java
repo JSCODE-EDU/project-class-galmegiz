@@ -24,6 +24,8 @@ public class ArticleMemberLike {
 
 
     public static ArticleMemberLike of(Article article, Member member){
-        return new ArticleMemberLike(null, article, member);
+        ArticleMemberLike articleMemberLike =new ArticleMemberLike(null, article, member);
+        article.getLikes().add(articleMemberLike);
+        return articleMemberLike;
     }
 }

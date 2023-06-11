@@ -2,12 +2,10 @@ package com.jscode.demoApp.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jscode.demoApp.config.SecurityConfig;
 import com.jscode.demoApp.dto.MemberDto;
 import com.jscode.demoApp.dto.request.MemberRegisterRequest;
 import com.jscode.demoApp.error.ErrorCode;
 import com.jscode.demoApp.error.exception.MemberDuplicateException;
-import com.jscode.demoApp.jwt.JwtTokenProvider;
 import com.jscode.demoApp.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,26 +16,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.params.provider.Arguments.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
+@ActiveProfiles("test")
 @WebMvcTest(MemberController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class MemberControllerTest {
+public class MemberRegisterTest {
 
     @Autowired
     MockMvc mockMvc;

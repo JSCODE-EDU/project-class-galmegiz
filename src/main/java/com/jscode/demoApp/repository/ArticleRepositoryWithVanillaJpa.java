@@ -40,12 +40,19 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
                 "order by a.createdAt desc", Article.class)
                 .setParameter("title", title)
                 .setFirstResult(pageRequest.page())
-                .setMaxResults(pageRequest.size())
+                .setMaxResults(pageRequest.size() * 100)
                 .getResultList();
     }
 
     @Override
     public void delete(Article article) {
         em.remove(article);
+    }
+
+    @Override
+    public Long getCount() {
+        return em.createQuery("SELECT COUNT(a) " +
+                "from Article a ", Long.class)
+                .getSingleResult();
     }
 }

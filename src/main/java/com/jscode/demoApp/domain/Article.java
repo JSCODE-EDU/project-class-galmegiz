@@ -21,7 +21,7 @@ public class Article extends BaseEntity{
     @Column(nullable = false) private String title;
     @Lob private String content;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     Member member;
 

@@ -19,6 +19,7 @@ public class ArticleDto {
     private String content;
 
     private LocalDateTime createdAt;
+    private LocalDateTime ModifiedAt;
 
     private Member member;
     private List<CommentDto> commentDtos;
@@ -28,7 +29,7 @@ public class ArticleDto {
 
 
     public static ArticleDto of(Long id, String title, String content){
-        return new ArticleDto(id, title, content, null, null, null, null);
+        return new ArticleDto(id, title, content, null, null, null, null, null);
     }
 
 
@@ -39,6 +40,7 @@ public class ArticleDto {
                 ,article.getTitle()
                 ,article.getContent()
                 ,article.getCreatedAt()
+                ,article.getLastModifiedAt()
                 ,article.getMember()
                 ,article.getComments().stream().map(CommentDto::fromEntity).toList()
                 ,article.getLikes().stream().map(LikeDto::fromEntity).toList()
@@ -50,6 +52,7 @@ public class ArticleDto {
                 ,article.getTitle()
                 ,article.getContent()
                 ,article.getCreatedAt()
+                ,article.getLastModifiedAt()
                 ,article.getMember()
                 ,null
                 ,null

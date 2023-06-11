@@ -1,6 +1,5 @@
 package com.jscode.demoApp.repository;
 
-import com.jscode.demoApp.config.JpaConfig;
 import com.jscode.demoApp.domain.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -9,10 +8,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 
+import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -20,12 +21,13 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
-@Import({MemberRepositoryWithVanillaJpa.class, JpaConfig.class})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import({MemberRepositoryWithVanillaJpa.class, TestJpaConfig.class})
+@ActiveProfiles("test")
 @DataJpaTest
 public class MemberRepositoryTest {
 
     @Autowired private MemberRepository memberRepository;
+    @Autowired private EntityManager em;
 
     private Member createMember(){
         Member member = Member.builder()
@@ -58,14 +60,16 @@ public class MemberRepositoryTest {
     @DisplayName("[R] Id로 멤버 검색 테스트(멤버 X)")
     @Test
     public void findByIdFailTest(){
-        Assertions.assertThat(memberRepository.findById(1L).isEmpty()).isTrue();
+        Assertions.assertThat(memberRepository.findById(2L).isEmpty()).isTrue();
     }
-
+    //Transactional로 rollback되면 delete 쿼리가 실행되지 않아 원하던 테스트 결과와 다를 수 있다.
     @DisplayName("[D] 멤버 삭제 테스트(멤버 O)")
+    @Rollback(value = false)
     @Test
     public void deleteMemberTest(){
         Member member = createMember();
         Long id = member.getId();
+
 
         memberRepository.delete(member);
 
@@ -75,8 +79,15 @@ public class MemberRepositoryTest {
     @DisplayName("[R] email로 멤버 검색 테스트(멤버 O)")
     @Test
     public void findByEmailTest(){
-        Member member = createMember();
+       /* Member member = createMember();
         Long id = member.getId();
+        String email = member.getEmail();
+*/
+        Member member = Member.builder()
+                .email("ssdfsdfm@naver.com")
+                .password("sdfsdfasfaf")
+                .build();
+        memberRepository.save(member);
         String email = member.getEmail();
 
         Member result = memberRepository.findByEmail(email).get();
@@ -129,5 +140,6 @@ public class MemberRepositoryTest {
                 .isInstanceOf(RuntimeException.class);
     }
     */
+
 
 }
