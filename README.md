@@ -29,10 +29,10 @@
 
 <br>
 
-# 👉API 문서 [링크]
+# 👉API 문서 ([링크](https://galmegiz.github.io/docs/))
  * Spring RestDocs 기반 API 문서 제공
 
-![예시](https://github.com/JSCODE-EDU/project-class-galmegiz/assets/126640838/446259a5-6cf8-44ae-9cd9-9a08000a2d02)
+![예시화면](https://github.com/JSCODE-EDU/project-class-galmegiz/assets/126640838/732b7c96-3154-4d77-b027-89b08a1f2a3c)
 
 <br>
 
