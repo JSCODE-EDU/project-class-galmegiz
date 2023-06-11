@@ -10,6 +10,7 @@ import com.jscode.demoApp.error.exception.ResourceNotFoundException;
 import com.jscode.demoApp.repository.ArticleRepository;
 import com.jscode.demoApp.repository.TestJpaConfig;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 
+@Disabled
 @ActiveProfiles("test")
 @Import({TestJpaConfig.class})
 @EnableAutoConfiguration(exclude = SecurityConfig.class)

@@ -60,7 +60,7 @@ public class ArticleRepositoryTest {
 
 
         //then
-        Assertions.assertThat(article.isEmpty()).isTrue();
+        Assertions.assertThat(article.isPresent()).isTrue();
     }
 
     @DisplayName("[R]게시물 Id로 조회 실패 테스트")

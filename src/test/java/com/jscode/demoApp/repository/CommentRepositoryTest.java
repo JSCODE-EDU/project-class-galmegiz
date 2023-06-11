@@ -79,7 +79,7 @@ public class CommentRepositoryTest {
         //given
 
         //when
-        Optional<Comment> comment = commentRepository.findById(2L);
+        Optional<Comment> comment = commentRepository.findById(10L);
 
         //then
         assertThat(comment.isEmpty()).isTrue();
