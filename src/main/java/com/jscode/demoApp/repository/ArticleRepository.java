@@ -1,5 +1,6 @@
 package com.jscode.demoApp.repository;
 
+import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
 import com.jscode.demoApp.dto.request.PageRequest;
 
@@ -14,4 +15,7 @@ public interface ArticleRepository {
     public void delete(Article article);
     public Long getCount();
 
+    public Optional<Article> getReferenceById(Long articleId);
+
+    public List<Article> findBySearchType(SearchType searchtype, String SearchKeyword, PageRequest pageRequest);
 }

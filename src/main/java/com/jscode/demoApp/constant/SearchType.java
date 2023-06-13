@@ -1,5 +1,5 @@
 package com.jscode.demoApp.constant;
 
 public enum SearchType {
-    TITLE
+    TITLE, CONTENT
 }
