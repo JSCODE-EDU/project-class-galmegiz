@@ -11,4 +11,6 @@ public interface MemberRepository {
     public Optional<Member> findByEmail(String email);
 
     public Optional<Member> findByEmailAndPassword(String email, String password);
+
+    public Optional<Member> getReferenceById(Long memberId);
 }

@@ -45,8 +45,8 @@ public class CommentServiceUnitTest {
         CommentDto commentDto = CommentDto.of(1L, "title", "content", 1L, memberDto, null, null);
         Member member = Member.builder().id(1L).email("email").password("password").build();
         Article article = Article.builder().title("title").content("content").member(member).build();
-        given(articleRepository.findById(commentDto.getId())).willReturn(Optional.of(article));
-        given(memberRepository.findById(commentDto.getMemberDto().getId())).willReturn(Optional.of(member));
+        given(articleRepository.getReferenceById(commentDto.getId())).willReturn(Optional.of(article));
+        given(memberRepository.getReferenceById(commentDto.getMemberDto().getId())).willReturn(Optional.of(member));
         given(commentRepository.save(any(Comment.class))).willReturn(any(Comment.class));
 
         //when
@@ -64,8 +64,8 @@ public class CommentServiceUnitTest {
         CommentDto commentDto = CommentDto.of(1L, "title", "content", 1L, memberDto, null, null);
         Member member = Member.builder().id(1L).email("email").password("password").build();
         Article article = Article.builder().title("title").content("content").member(member).build();
-        given(articleRepository.findById(commentDto.getId())).willReturn(Optional.empty());
-        given(memberRepository.findById(commentDto.getMemberDto().getId())).willReturn(Optional.of(member));
+        given(articleRepository.getReferenceById(commentDto.getId())).willReturn(Optional.empty());
+        given(memberRepository.getReferenceById(commentDto.getMemberDto().getId())).willReturn(Optional.of(member));
 
 
         //when then
@@ -83,8 +83,8 @@ public class CommentServiceUnitTest {
         CommentDto commentDto = CommentDto.of(1L, "title", "content", 1L, memberDto, null, null);
         Member member = Member.builder().id(1L).email("email").password("password").build();
         Article article = Article.builder().title("title").content("content").member(member).build();
-        given(articleRepository.findById(commentDto.getId())).willReturn(Optional.of(article));
-        given(memberRepository.findById(commentDto.getMemberDto().getId())).willReturn(Optional.empty());
+        given(articleRepository.getReferenceById(commentDto.getId())).willReturn(Optional.of(article));
+        given(memberRepository.getReferenceById(commentDto.getMemberDto().getId())).willReturn(Optional.empty());
 
 
         //when then

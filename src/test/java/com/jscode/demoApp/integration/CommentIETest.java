@@ -56,6 +56,16 @@ public class CommentIETest {
         return commentRequest;
     }
 
+    public CommentRequest createErrorComment(){
+        CommentRequest commentRequest = new CommentRequest();
+
+        ReflectionTestUtils.setField(commentRequest, "title", "comment title");
+        ReflectionTestUtils.setField(commentRequest, "content", "comment content");
+        ReflectionTestUtils.setField(commentRequest, "articleId", 100L);
+
+        return commentRequest;
+    }
+
     public CommentRequest updatedComment(Long commentId){
         CommentRequest commentRequest = new CommentRequest();
 
@@ -81,6 +91,20 @@ public class CommentIETest {
                 .andExpect(jsonPath("$.title").exists())
                 .andExpect(jsonPath("$.content").exists())
                 .andExpect(jsonPath("$.createdBy").value("sdfsdf@naver.com"));
+    }
+
+    @Test
+    @DisplayName("[POST][저장] 댓글 작성 테스트(실패, 게시글 없음)")
+    public void createCommentFailNoArticleTest() throws Exception{
+        CommentRequest commentRequest = createErrorComment();
+        ObjectMapper mapper = new ObjectMapper();
+        createToken();
+        mvc.perform(post("/comments")
+                        .header(JwtTokenProvider.AUTHORIZATION_HEADER, defaultToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(commentRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.COMMENT_CREATE_ERROR.getCode()));
     }
 
     @Test
