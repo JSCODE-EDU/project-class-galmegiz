@@ -33,7 +33,7 @@ public class CommentService {
         Optional<Article> article = articleRepository.findById(commentDto.getArticleId());
         Optional<Member> member = memberRepository.findById(commentDto.getMemberDto().getId());
 
-        //Spring JPA 쓰면 getRerefenceById를 이용해 repository 단에서 throw시킬 수도 있음
+
         if(article.isEmpty() || member.isEmpty()){
             throw new ResourceCreationException(ErrorCode.COMMENT_CREATE_ERROR, article.isEmpty() ? "article" : "member");
         }

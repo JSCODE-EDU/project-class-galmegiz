@@ -66,17 +66,7 @@ public class ArticleController {
         ArticleResponse articleResponse = ArticleResponse.fromDto(articleService.getArticle(id));
         return ResponseEntity.ok(articleResponse);
     }
-/*
-    @PostMapping("/articles/form")
-    public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto) throws URISyntaxException {
-        ArticleResponseDto newArticleResponseDto = ArticleResponseDto.fromDto(articleService.createArticle(articleRequestDto.toArticleDto()));
-        URI createdUrl = new URI("/articles/" + newArticleResponseDto.getId());
-        return ResponseEntity.created(createdUrl).body("게시글이 생성되었습니다.");
-    }
 
- */
-
-    //@PreAuthorize("isAuthenticated()") -> 익셉션 처리 추가 공부 필요
     @PostMapping("/articles/form")
     public ResponseEntity createArticle(@Valid ArticleRequestDto articleRequestDto, @AuthenticationPrincipal UserPrincipal userPrincipal) throws URISyntaxException {
         if(userPrincipal == null){

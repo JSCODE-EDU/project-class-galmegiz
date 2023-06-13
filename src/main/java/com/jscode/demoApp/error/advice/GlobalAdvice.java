@@ -21,62 +21,33 @@ public class GlobalAdvice {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity AccessDenyExHandler(AccessDeniedException ex){
-        System.out.println("================eroror============");
         throw new AuthorizeException(ErrorCode.UNAUTHORIZED_RESOURCE_ACCESS);
     }
 
-    //@RequestBody에 text/html형식 데이터가 올 때
-    /*HttpMessageConverter에서 throw하는 Exception이다보니 Custom Exception을 적용할 수 없다.
+    /*@RequestBody에 text/html형식 데이터가 올 때
+       HttpMessageConverter에서 throw하는 Exception이다보니 Custom Exception을 적용할 수 없다.
       그러다보니 위 메소드와 동일한 방식으로 처리 제한
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity messageNotReadableExHandler(HttpMessageNotReadableException ex){
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.REQUEST_FIELD_ERROR);
-        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity bindingExExHandler(BindException ex){
-        /*
-            bindingResult의 값을 errors Map에 담아 응답으로 보내준다.
-            {에러 필드명1 : {에러 정보1, 에러 정보 2}, 에러 필드명2: {에러 정보1, 에러 정보2}라는
-            형식으로 json응답을 보내고 싶을 때 Map을 쓰지 앟는 더 적절한 방법이 있을까?
-            컨트롤러에서 여러 번 사용될 것 같으므로 별도 코드로 빼는 게 더 좋을 듯 하다.
-         */
-
         Map<String, List<String>> messageDetail = new HashMap<>();
-        BindingResult bindingResult = ex.getBindingResult();
-        ex.printStackTrace();
-        if(bindingResult.hasErrors()){
-            bindingResult.getFieldErrors()
-                    .forEach(e -> messageDetail
-                            .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
-                            .add(e.getDefaultMessage()));
-        }
-        ex.printStackTrace();
+        convertBindingResultToMap(ex.getBindingResult(), messageDetail);
+
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.INVALID_REQUEST_ENCODE, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity MethodArgumentNotValidExHandler(MethodArgumentNotValidException ex){
-        /*
-            bindingResult의 값을 errors Map에 담아 응답으로 보내준다.
-            {에러 필드명1 : {에러 정보1, 에러 정보 2}, 에러 필드명2: {에러 정보1, 에러 정보2}라는
-            형식으로 json응답을 보내고 싶을 때 Map을 쓰지 앟는 더 적절한 방법이 있을까?
-            컨트롤러에서 여러 번 사용될 것 같으므로 별도 코드로 빼는 게 더 좋을 듯 하다.
-         */
-
         Map<String, List<String>> messageDetail = new HashMap<>();
-        BindingResult bindingResult = ex.getBindingResult();
-
-        if(bindingResult.hasErrors()){
-            bindingResult.getFieldErrors()
-                    .forEach(e -> messageDetail
-                            .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
-                            .add(e.getDefaultMessage()));
-        }
+        convertBindingResultToMap(ex.getBindingResult(), messageDetail);
 
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.REQUEST_FIELD_ERROR, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
@@ -86,21 +57,8 @@ public class GlobalAdvice {
 
     @ExceptionHandler(FieldBindingException.class)
     public ResponseEntity FieldBindingExExHandler(FieldBindingException ex){
-        /*
-            bindingResult의 값을 errors Map에 담아 응답으로 보내준다.
-            {에러 필드명1 : {에러 정보1, 에러 정보 2}, 에러 필드명2: {에러 정보1, 에러 정보2}라는
-            형식으로 json응답을 보내고 싶을 때 Map을 쓰지 앟는 더 적절한 방법이 있을까?
-            컨트롤러에서 여러 번 사용될 것 같으므로 별도 코드로 빼는 게 더 좋을 듯 하다.
-         */
-
         Map<String, List<String>> messageDetail = new HashMap<>();
-        BindingResult bindingResult = ex.getBindingResult();
-        if(bindingResult.hasErrors()){
-            bindingResult.getFieldErrors()
-                    .forEach(e -> messageDetail
-                            .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
-                            .add(e.getDefaultMessage()));
-        }
+        convertBindingResultToMap(ex.getBindingResult(), messageDetail);
 
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ErrorCode.REQUEST_FIELD_ERROR, messageDetail);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
@@ -144,8 +102,19 @@ public class GlobalAdvice {
     @ExceptionHandler(ResourceCreationException.class)
     public ResponseEntity resourceCreateExHandler(ResourceCreationException ex){
         ErrorResponseDto errorResponseDto = ErrorResponseDto.of(ex.getErrorCode(), ex.getResourceName());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDto);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
+
+    private static void convertBindingResultToMap(BindingResult ex, Map<String, List<String>> messageDetail) {
+        BindingResult bindingResult = ex;
+
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors()
+                    .forEach(e -> messageDetail
+                            .computeIfAbsent(e.getField(), key -> new ArrayList<String>())
+                            .add(e.getDefaultMessage()));
+        }
+    }
 
 }

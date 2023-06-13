@@ -1,19 +1,33 @@
 package com.jscode.demoApp.repository;
 
+import com.jscode.demoApp.constant.SearchType;
 import com.jscode.demoApp.domain.Article;
+import com.jscode.demoApp.domain.QArticle;
 import com.jscode.demoApp.dto.request.PageRequest;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
+import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
+import static com.jscode.demoApp.domain.QArticle.*;
+
 @Repository
 public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
 
     @PersistenceContext
     EntityManager em;
+    private final JPAQueryFactory jpaQueryFactory;
+
+    public ArticleRepositoryWithVanillaJpa(EntityManager em) {
+        this.em = em;
+        this.jpaQueryFactory = new JPAQueryFactory(em);
+    }
+
     @Override
     public Article save(Article article) {
         em.persist(article);
@@ -54,5 +68,30 @@ public class ArticleRepositoryWithVanillaJpa implements ArticleRepository{
         return em.createQuery("SELECT COUNT(a) " +
                 "from Article a ", Long.class)
                 .getSingleResult();
+    }
+
+    @Override
+    public Optional<Article> getReferenceById(Long articleId) {
+        return Optional.ofNullable(em.getReference(Article.class, articleId));
+    }
+
+    @Override
+    public List<Article> findBySearchType(SearchType searchtype, String searchKeyword, PageRequest pageRequest) {
+        return jpaQueryFactory.select(article)
+                .from(article)
+                .where(searchByKeyword(searchtype, searchKeyword))
+                .offset(pageRequest.page())
+                .limit(pageRequest.size() * 100)
+                .fetch();
+
+    }
+
+    private BooleanExpression searchByKeyword(SearchType searchType, String searchKeyword){
+        if(searchType == SearchType.TITLE){
+            return article.title.like("%" + searchKeyword + "%");
+        }else if(searchType == SearchType.CONTENT){
+            return article.content.like("%" + searchKeyword + "%");
+        }
+        return null;
     }
 }
