@@ -47,10 +47,8 @@ public class ArticleService {
 
         if(searchRequestDto.getSearchType() == null){
             articles = articleRepository.findAll(pageRequest);
-        }else if(searchRequestDto.getSearchType() == SearchType.TITLE){
-            articles = articleRepository.findByTitle(searchRequestDto.getSearchKeyword(), pageRequest);
-        }else{ //ToDo : 향후 구현
-            articles = articleRepository.findAll(pageRequest);
+        }else{
+            articles = articleRepository.findBySearchType(searchRequestDto.getSearchType(), searchRequestDto.getSearchKeyword(), pageRequest);
         }
         log.info("========after sql=========");
 

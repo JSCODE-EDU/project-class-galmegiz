@@ -57,4 +57,9 @@ public class MemberRepositoryWithVanillaJpa implements MemberRepository{
 
         return Optional.ofNullable(member);
     }
+
+    @Override
+    public Optional<Member> getReferenceById(Long memberId) {
+        return Optional.ofNullable(em.getReference(Member.class, memberId));
+    }
 }
